@@ -8,7 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
+/*
+ * This class is notified when a message comes from the server so it knows to update
+ * the list view.  
+ * TODO: This is where we could have the plot along with the list view or we could
+ * just replace the list view with a plot. 
+ */
 public class MyCustomAdapter extends BaseAdapter {
     private ArrayList<String> mListItems;
     private LayoutInflater mLayoutInflater;

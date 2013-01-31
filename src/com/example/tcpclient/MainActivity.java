@@ -1,18 +1,20 @@
 package com.example.tcpclient;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Date;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import java.util.ArrayList;
 
 public class MainActivity extends Activity
 {
@@ -20,7 +22,12 @@ public class MainActivity extends Activity
     private ArrayList<String> arrayList;
     private MyCustomAdapter mAdapter;
     private TCPClient mTcpClient;
-
+    // Location of saved files on SD Card
+    private static final String FILE_DIR = "/TCPClient/";
+    private File sdCard = Environment.getExternalStorageDirectory();
+    private File dir = new File (sdCard.getAbsolutePath() + FILE_DIR);
+    private String filename="";
+    private String extension=".txt";
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -62,18 +69,24 @@ public class MainActivity extends Activity
 
     }
 
-    public class connectTask extends AsyncTask<String,String,TCPClient> {
-
+    public class connectTask extends AsyncTask<String,String,TCPClient> {    	
+    	
         @Override
-        protected TCPClient doInBackground(String... message) {
-
-            //we create a TCPClient object and
+        protected TCPClient doInBackground(String... message) {        	
+        	// create file pointer only once            
+            dir.mkdirs();            
+            filename = Long.toString(System.currentTimeMillis());
+        	//we create a TCPClient object and
             mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
                 @Override
                 //here the messageReceived method is implemented
                 public void messageReceived(String message) {
                     //this method calls the onProgressUpdate
                     publishProgress(message);
+                    //write message to file on device
+                    //TODO: This may need to be buffered to prevent
+                    //accessing file to often
+                    writeToFile(message);
                 }
             });
             mTcpClient.run();
@@ -91,5 +104,36 @@ public class MainActivity extends Activity
             // from server was added to the list
             mAdapter.notifyDataSetChanged();
         }
-    }
+        
+        protected void writeToFile(String message)
+        {        	
+        	File data = new File(dir.getAbsolutePath()+"/"+filename+extension);
+        	if (!data.exists())
+        	{
+        		try
+        		{
+        			data.createNewFile();
+        		} 
+        	    catch (IOException e)
+        	    {
+        	    	// TODO Auto-generated catch block
+        	    	e.printStackTrace();
+        	    }
+        		}
+        	   	try
+        	   	{
+        	   		//BufferedWriter for performance, true to set append to file flag
+        	   		BufferedWriter buf = new BufferedWriter(new FileWriter(data, true)); 
+        	   		buf.append(message);
+        	   		buf.newLine();
+        	   		buf.flush();
+        	   		buf.close();
+        	   	}
+        	   	catch (IOException e)
+        	   	{
+        	   		// TODO Auto-generated catch block
+        	   		e.printStackTrace();
+        	   	}        	
+        	}
+    	}
 }

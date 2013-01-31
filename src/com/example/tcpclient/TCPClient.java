@@ -9,7 +9,7 @@ import java.net.Socket;
 public class TCPClient {
 
     private String serverMessage;
-    public static final String SERVERIP = "192.168.1.3"; //your computer IP address
+    public static final String SERVERIP = "192.168.1.5"; //your computer IP address
     public static final int SERVERPORT = 4444;
     private OnMessageReceived mMessageListener = null;
     private boolean mRun = false;
@@ -69,7 +69,7 @@ public class TCPClient {
                     serverMessage = in.readLine();
 
                     if (serverMessage != null && mMessageListener != null) {
-                        //call the method messageReceived from MyActivity class
+                        //call the method messageReceived from MainActivity class
                         mMessageListener.messageReceived(serverMessage);
                     }
                     serverMessage = null;
@@ -98,7 +98,7 @@ public class TCPClient {
 
     }
 
-    //Declare the interface. The method messageReceived(String message) will must be implemented in the MyActivity
+    //Declare the interface. The method messageReceived(String message) will must be implemented in the MainActivity
     //class at on asynckTask doInBackground
     public interface OnMessageReceived {
         public void messageReceived(String message);
