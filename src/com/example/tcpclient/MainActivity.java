@@ -28,6 +28,9 @@ public class MainActivity extends Activity
     private File dir = new File (sdCard.getAbsolutePath() + FILE_DIR);
     private String filename="";
     private String extension=".txt";
+    private EditText ipAddressInput;
+    private EditText portInput;
+    private Button send;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -37,16 +40,28 @@ public class MainActivity extends Activity
         arrayList = new ArrayList<String>();
 
         final EditText editText = (EditText) findViewById(R.id.editText);
-        Button send = (Button)findViewById(R.id.send_button);
-
+        send = (Button)findViewById(R.id.send_button);
+        send.setEnabled(false);
+        Button connect = (Button)findViewById(R.id.connect_button);
+        
+        ipAddressInput = (EditText)findViewById(R.id.ip_address);
+        portInput =  (EditText)findViewById(R.id.port);
         //relate the listView from java to the one created in xml
         mList = (ListView)findViewById(R.id.list);
         mAdapter = new MyCustomAdapter(this, arrayList);
         mList.setAdapter(mAdapter);
 
-        // connect to the server
-        new connectTask().execute("");
-
+        connect.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				new connectTask().execute("");	
+				send.setEnabled(true);
+			}
+		});
+        // connect to the server        
+        
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,8 +91,11 @@ public class MainActivity extends Activity
         	// create file pointer only once            
             dir.mkdirs();            
             filename = Long.toString(System.currentTimeMillis());
-        	//we create a TCPClient object and
-            mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
+        	        	
+            //we create a TCPClient object and
+            mTcpClient = new TCPClient(ipAddressInput.getText().toString(),
+            						   Integer.valueOf(portInput.getText().toString()),
+            						   new TCPClient.OnMessageReceived() {
                 @Override
                 //here the messageReceived method is implemented
                 public void messageReceived(String message) {
@@ -105,35 +123,30 @@ public class MainActivity extends Activity
             mAdapter.notifyDataSetChanged();
         }
         
-        protected void writeToFile(String message)
-        {        	
+        protected void writeToFile(String message) {        	
         	File data = new File(dir.getAbsolutePath()+"/"+filename+extension);
-        	if (!data.exists())
-        	{
-        		try
-        		{
+        	if (!data.exists())	{
+        		try {
         			data.createNewFile();
         		} 
-        	    catch (IOException e)
-        	    {
+        	    catch (IOException e) {
         	    	// TODO Auto-generated catch block
         	    	e.printStackTrace();
         	    }
-        		}
-        	   	try
-        	   	{
-        	   		//BufferedWriter for performance, true to set append to file flag
-        	   		BufferedWriter buf = new BufferedWriter(new FileWriter(data, true)); 
-        	   		buf.append(message);
-        	   		buf.newLine();
-        	   		buf.flush();
-        	   		buf.close();
-        	   	}
-        	   	catch (IOException e)
-        	   	{
-        	   		// TODO Auto-generated catch block
-        	   		e.printStackTrace();
-        	   	}        	
         	}
-    	}
+        	   	
+        	try {
+        		//BufferedWriter for performance, true to set append to file flag
+        		BufferedWriter buf = new BufferedWriter(new FileWriter(data, true)); 
+        		buf.append(message);
+        		buf.newLine();
+        		buf.flush();
+        		buf.close();
+        	}
+        	catch (IOException e) {
+        		// TODO Auto-generated catch block
+        		e.printStackTrace();
+        	}        	
+        }
+    }
 }

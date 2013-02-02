@@ -2,8 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-        >
+              android:layout_height="fill_parent">
+    <LinearLayout android:id="@+id/header"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:gravity="bottom">
+
+        <TextView
+            android:id="@+id/ipLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+        <EditText
+            android:id="@+id/ip_address"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.75" />
+
+        <TextView
+            android:id="@+id/portLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Port"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText android:layout_width="0dp"
+                  android:layout_height="40dp"
+                  android:id="@+id/port"
+                  android:layout_weight="1"/>
+        <Button android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:id="@+id/connect_button"
+    			android:layout_gravity="center_vertical"
+    			android:text="connect" />
+    </LinearLayout>
+        
     <ListView android:id="@+id/list"
               android:layout_width="fill_parent"
               android:layout_height="0dip"
