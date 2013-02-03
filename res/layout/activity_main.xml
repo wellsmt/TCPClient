@@ -39,7 +39,16 @@
     			android:layout_gravity="center_vertical"
     			android:text="connect" />
     </LinearLayout>
-        
+    
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/dynamicPlot"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        title="Data Chart" />
+
     <ListView android:id="@+id/list"
               android:layout_width="fill_parent"
               android:layout_height="0dip"

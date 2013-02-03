@@ -22,6 +22,9 @@ public class TCPClient {
      */
     public TCPClient(String ip, int port, OnMessageReceived listener) {
         SERVERIP = ip;
+        if(SERVERIP.startsWith("/", 0)){
+        	SERVERIP = SERVERIP.substring(1, SERVERIP.length());
+        }
         SERVERPORT = port;
     	mMessageListener = listener;
     }
@@ -49,7 +52,7 @@ public class TCPClient {
             //here you must put your computer's IP address.
             InetAddress serverAddr = InetAddress.getByName(SERVERIP);
 
-            Log.e("TCP Client", "C: Connecting...");
+            Log.i("TCP Client", String.format("C: Attempting to connect to %s:%d ...",serverAddr, SERVERPORT));
 
             //create a socket to make the connection with the server
             Socket socket = new Socket(serverAddr, SERVERPORT);
