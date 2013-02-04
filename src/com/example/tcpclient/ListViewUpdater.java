@@ -2,21 +2,33 @@
 package com.example.tcpclient;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import android.app.Activity;
 
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 
+/**
+ * List View Updater class receives message from the data interpretor
+ *  and adds the raw message data to the display list. 
+ *
+ */
 public class ListViewUpdater implements MessageConsumer, Runnable {
 	private Activity activity;
 	private MyCustomAdapter adapter;
-	private ArrayList<String> messagesToDisplay;
+	private List<String> messagesToDisplay;
 	
+	/**
+	 * Constructor. Takes necessary dependencies.
+	 * @param activity
+	 * @param adapter
+	 */
 	public ListViewUpdater(Activity activity, MyCustomAdapter adapter){
 		this.activity = activity;
 		this.adapter = adapter;
-		messagesToDisplay = new ArrayList<String>(10);
+		messagesToDisplay = Collections.synchronizedList(new ArrayList<String>(10));
 	}
 	
 	@Override
