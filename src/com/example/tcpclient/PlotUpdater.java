@@ -65,8 +65,8 @@ public class PlotUpdater implements MessageConsumer, Runnable{
     	double max = Math.max(series[0].getMaximum().doubleValue(), series[1].getMaximum().doubleValue());
     	max = Math.max(series[2].getMaximum().doubleValue(), max);
     	
-    	double min = Math.max(series[0].getMinimum().doubleValue(), series[1].getMinimum().doubleValue());
-    	min = Math.max(series[2].getMinimum().doubleValue(), min);
+    	double min = Math.min(series[0].getMinimum().doubleValue(), series[1].getMinimum().doubleValue());
+    	min = Math.min(series[2].getMinimum().doubleValue(), min);
     	
     	dataPlot.setRangeBoundaries(min - rangeAdder, max + rangeAdder, BoundaryMode.FIXED);
     	dataPlot.redraw();
