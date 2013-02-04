@@ -53,7 +53,12 @@ public class Server extends Thread {
       }
    }
    protected String getDataLine(long timeMs){
-	  String dataLine = String.format("%d,%10d,%9.8f\r\n",0,timeMs,123.34567);
+	   double value = Math.sin((double)timeMs) + Math.random();
+	   double value2 = Math.cos((double)timeMs) + Math.random();
+	   double value3 = Math.sin((double)timeMs+1) + Math.random();
+	  String dataLine = String.format("%d,%10d,%9.8f\r\n",0,timeMs,value);
+	  dataLine += String.format("%d,%10d,%9.8f\r\n",1,timeMs,value2);
+	  dataLine += String.format("%d,%10d,%9.8f\r\n",2,timeMs,value3);
       return dataLine;
    }
 

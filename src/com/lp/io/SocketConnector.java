@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// Copyright 2013 Marc Bernardini.
 package com.lp.io;
 
 import java.beans.PropertyChangeEvent;
@@ -154,15 +151,43 @@ public class SocketConnector extends Thread {
          setState(State.Failed);
       }
    }
-
+   /**
+    * Closes the socket connection. This method will swallow any
+    *  errors associated with closing the socket.
+    */
+   public void close(){
+	   try{
+		   if(isConnected() && null != cSocket){
+		   cSocket.close();
+		   }
+	   }catch(IOException err){
+		   log.warning("Could not close the socket. Reason: "+err.toString());
+	   }
+   }
+   
+   /**
+    * Returns true if the socket is connect to the peer.
+    * @return
+    */
    public Boolean isConnected() {
       return (state == State.Connected);
    }
 
+   /**
+    * Returns the current connection state of the socket.
+    * @return
+    */
    public SocketConnector.State getConnectionState() {
       return this.state;
    }
 
+   /**
+    * Writes the byte data to the socket if the socket is
+    *  connected. If the socket is not connected this method
+    *  just returns.
+    * @param data
+    * @throws IOException
+    */
    public void send(byte[] data) throws IOException {
       if (state == State.Connected) {
          cSocket.getOutputStream().write(data);
