@@ -1,5 +1,7 @@
 package com.example.tcpclient;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,7 +10,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
@@ -28,64 +29,19 @@ import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpretor;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
-import com.lp.io.SimpleDeviceMessage;
 import com.lp.io.SocketConnector;
-import com.lp.test_app.SensorDataSeries;
 
+/**
+ * The applications main activity.
+ * 
+ */
 public class MainActivity extends Activity
 {
-	/**
-	 * The device message consumer class is used to receive messages
-	 *  from the message interpretor and updates the UI accordingly.
-	 * @author marc
-	 */
-	public class DeviceMessageConsumer implements MessageConsumer, Runnable{
-		private SensorDataSeries series;
-		private Activity activity;
-		XYPlot dataPlot;
-		
-		DeviceMessageConsumer(SensorDataSeries series, Activity activity, XYPlot dataPlot){
-			this.series = series;
-			this.activity = activity;
-			this.dataPlot = dataPlot;
-		}
-		
-		@Override
-		public void onMessage(Message msg) {
-			SimpleDeviceMessage deviceMsg = (SimpleDeviceMessage)msg;
-			series.addLast(deviceMsg.getTimestamp(), deviceMsg.getValue());
-			
-        	
-            //in the arrayList we add the messaged received from server
-            arrayList.add(deviceMsg.getData());
-			
-			// Now update the UI using this classes run method.
-			activity.runOnUiThread(this);
-		}
-		
-		@Override
-		public void run(){
-			// The run method is used to provide thread safe updates to the UI.
-
-        	double range = dataSeries.getRange();
-        	double rangeAdder = 0.05*range;
-        	if(rangeAdder < 0.0001){
-        		rangeAdder = 0.1;
-        	}
-        	dataPlot.setRangeBoundaries(dataSeries.getMinimum().doubleValue() - rangeAdder, dataSeries.getMaximum().doubleValue() + rangeAdder, BoundaryMode.FIXED);
-        	dataPlot.redraw();
-        	
-        	//TODO: Need to pass these into the constructor
-            // notify the adapter that the data set has changed. This means that new message received
-            // from server was added to the list
-            mAdapter.notifyDataSetChanged();
-		}
-	}
-	
     private ListView mList;
     private ArrayList<String> arrayList;
     private MyCustomAdapter mAdapter;
-    //private TCPClient mTcpClient;
+    private ListViewUpdater listUpdater;
+    
     private SocketConnector connection;
     // Location of saved files on SD Card
     private static final String FILE_DIR = "/TCPClient/";
@@ -95,12 +51,13 @@ public class MainActivity extends Activity
     private String extension=".txt";
     private EditText ipAddressInput;
     private EditText portInput;
+    private Button connect;
     
     private DataInterpreter dataInterpretor;
     
     private LogFileWriter fileWriter;
-    private DeviceMessageConsumer messageConsumer;
-    private SensorDataSeries dataSeries;
+    private PlotUpdater messageConsumer;
+    private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
     
     private XYPlot dynamicPlot;
 
@@ -110,11 +67,13 @@ public class MainActivity extends Activity
         // get handles to our View defined in layout.xml:
         dynamicPlot = (XYPlot) findViewById(R.id.dynamicPlot);
         dynamicPlot.setTitle("Data Plot");
-        dataSeries = new SensorDataSeries("Channel 0", 30);
+        dataSeries[0] = new SensorDataSeries("Channel 0", 30);
+        dataSeries[1] = new SensorDataSeries("Channel 1", 30);
+        dataSeries[2] = new SensorDataSeries("Channel 2", 30);
 
         // only display whole numbers in domain labels
         dynamicPlot.getGraphWidget().setDomainValueFormat(new DecimalFormat("0"));
-        dynamicPlot.setBackgroundColor(Color.BLACK);
+        //dynamicPlot.setBackgroundColor(Color.BLACK);
         Paint bg = new Paint();
         bg.setColor(Color.BLACK);
         dynamicPlot.getGraphWidget().setBackgroundPaint(bg);
@@ -131,11 +90,20 @@ public class MainActivity extends Activity
         // getInstance and position datasets:
 
         // create a series using a formatter with some transparency applied:
-        LineAndPointFormatter f1 = new LineAndPointFormatter(Color.rgb(51, 51, 255), Color.rgb(51, 153, 255), null);
-        
+        LineAndPointFormatter f1 = new LineAndPointFormatter(Color.rgb(255, 51, 51), Color.rgb(255, 153, 153), null);  
         f1.getLinePaint().setStyle(Paint.Style.STROKE);
         f1.getLinePaint().setStrokeWidth(2);
-        dynamicPlot.addSeries(dataSeries, f1);//new LineAndPointFormatter(Color.rgb(51, 51, 255),null,null, FillDirection.BOTTOM));
+        dynamicPlot.addSeries(dataSeries[0], f1);
+        
+        LineAndPointFormatter f2 = new LineAndPointFormatter(Color.rgb(51, 51, 255), Color.rgb(51, 153, 255), null);  
+        f2.getLinePaint().setStyle(Paint.Style.STROKE);
+        f2.getLinePaint().setStrokeWidth(2);
+        dynamicPlot.addSeries(dataSeries[1], f2);
+        
+        LineAndPointFormatter f3 = new LineAndPointFormatter(Color.rgb(51, 255, 51), Color.rgb(153, 255, 153), null);  
+        f3.getLinePaint().setStyle(Paint.Style.STROKE);
+        f3.getLinePaint().setStrokeWidth(2);
+        dynamicPlot.addSeries(dataSeries[2], f3);
         //dynamicPlot.setGridPadding(5, 0, 5, 0);
         // hook up the plotUpdater to the data model:
 
@@ -161,8 +129,8 @@ public class MainActivity extends Activity
 
         final EditText editText = (EditText) findViewById(R.id.editText);
         send = (Button)findViewById(R.id.send_button);
-        //send.setEnabled(false);
-        Button connect = (Button)findViewById(R.id.connect_button);
+        send.setEnabled(false);
+        connect = (Button)findViewById(R.id.connect_button);
         
         ipAddressInput = (EditText)findViewById(R.id.ip_address);
         portInput =  (EditText)findViewById(R.id.port);
@@ -176,25 +144,34 @@ public class MainActivity extends Activity
         mList.setAdapter(mAdapter);
         
         dataInterpretor = new DeviceMessageInterpretor();
+
+        
         // Create and register the device message consumer.
-        messageConsumer = new DeviceMessageConsumer(dataSeries, this,dynamicPlot);
-        dataInterpretor.registerObserver(messageConsumer);
+        listUpdater = new ListViewUpdater(this, mAdapter);
+        dataInterpretor.registerObserver(listUpdater);
         
         //Create and register the log file writer
-
-        	fileWriter = new LogFileWriter(dir.getAbsolutePath(),extension);
-        	dataInterpretor.registerObserver(fileWriter);
-        //}catch(IOException err){
-       // 	Log.e(LogFileWriter.TAG, "Could not open log file. No data log will be created.", err);
-       // }
+        fileWriter = new LogFileWriter(dir.getAbsolutePath(),extension);
+        dataInterpretor.registerObserver(fileWriter);
+        
+        // Create and register the device message consumer.
+        messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
+        dataInterpretor.registerObserver(messageConsumer);
         
         connect.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-
-				new connectTask().execute("");	
-				send.setEnabled(true);
+				if(connection != null && connection.isConnected())
+				{
+					connection.close();
+					connect.setEnabled(true);
+					connect.setText("Connect");
+					return;
+				}
+				connect.setEnabled(false);
+				connect.setText("Connecting...");
+				new connectTask().execute("");
 			}
 		});
         // connect to the server        
@@ -203,6 +180,7 @@ public class MainActivity extends Activity
 			@Override
 			public void onClick(View view) {
 				try {
+					
 					String message = editText.getText().toString();
 
 					// add the text in the arrayList
@@ -226,16 +204,13 @@ public class MainActivity extends Activity
 
 	}
     
-    public class connectTask extends AsyncTask<String,String,TCPClient> {    	
+    public class connectTask extends AsyncTask<String,String,TCPClient> implements PropertyChangeListener{    	
     	
         @Override
         protected TCPClient doInBackground(String... message) {        	
         	// create file pointer only once            
 			dir.mkdirs();
 			filename = Long.toString(System.currentTimeMillis());
-			int port = Integer.valueOf(portInput.getText().toString());
-			String host = ipAddressInput.getText().toString();
-			connection = new SocketConnector(host, port, dataInterpretor);
 			try {
 				fileWriter.startNewFile(filename);
 			} catch (IOException err) {
@@ -243,93 +218,36 @@ public class MainActivity extends Activity
 						"Could not open log file. No data log will be created.",
 						err);
 			}
-
+			// Attempt connection.
+			int port = Integer.valueOf(portInput.getText().toString());
+			String host = ipAddressInput.getText().toString();
+			connection = new SocketConnector(host, port, dataInterpretor);
+			connection.addChangeListener(this);
+			
 			return null;
         }
 
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
+            if(connection.isConnected()){
+            	connect.setText("Disconnect");
+            	connect.setEnabled(true);
+				send.setEnabled(true);
+            }else{
+                connect.setText("Connect");
+                connect.setEnabled(true);
+				send.setEnabled(false);
+            }
+            //Clean up the reference to this so that we don't keep any
+            // unneeded references.
+            connection.removeChangeListener(this);
+        }
 
-            //in the arrayList we add the messaged received from server
-            arrayList.add(values[0]);
-            // notify the adapter that the data set has changed. This means that new message received
-            // from server was added to the list
-            mAdapter.notifyDataSetChanged();
-        }
-        
-        protected void writeToFile(String message) {        	
-        	File data = new File(dir.getAbsolutePath()+"/"+filename+extension);
-        	if (!data.exists())	{
-        		try {
-        			data.createNewFile();
-        		} 
-        	    catch (IOException e) {
-        	    	// TODO Auto-generated catch block
-        	    	e.printStackTrace();
-        	    }
-        	}
-        	   	
-        	try {
-        		//BufferedWriter for performance, true to set append to file flag
-        		BufferedWriter buf = new BufferedWriter(new FileWriter(data, true)); 
-        		buf.append(message);
-        		buf.newLine();
-        		buf.flush();
-        		buf.close();
-        	}
-        	catch (IOException e) {
-        		// TODO Auto-generated catch block
-        		e.printStackTrace();
-        	}        	
-        }
-    }
-    
-    public class LogFileWriter implements MessageConsumer{
-    	public static final String TAG = "LOG FILE WRITER";
-    	String directory;
-    	String extension;
-    	File data;
-    	BufferedWriter buf;
-    	
-    	LogFileWriter(String dir, String extension){
-    		this.directory = dir;
-    		this.extension = extension;
-    	}
-    	
-    	/**
-    	 * Creates a new file with the specified file name to log out data.
-    	 * @param filename
-    	 * @throws IOException
-    	 */
-    	public void startNewFile(String filename) throws IOException{
-    		if(buf !=null){
-    			buf.close();
-    		}
-    		String filePath = dir+"/"+filename+extension;
-    		Log.d(TAG, String.format("Attempting to open log file: %s", filePath));
-    		data = new File(filePath);
-        	if (!data.exists())	{
-        		data.createNewFile();
-        	}
-        	buf = new BufferedWriter(new FileWriter(data, true)); 
-    	}
-    	
 		@Override
-		public void onMessage(Message message) {
-			// If the buffer is null, do nothing.
-			if(buf == null){
-				return;
-			}
-			try{
-    		buf.append(message.getData());
-    		buf.newLine();
-    		buf.flush();
-			}catch(IOException err){
-				Log.e(TAG, "Unable to append data to file.", err);
-			}
+		public void propertyChange(PropertyChangeEvent event) {
+			publishProgress();
 		}
-    	
     }
     
 }

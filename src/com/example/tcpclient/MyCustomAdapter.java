@@ -16,7 +16,12 @@ import java.util.ArrayList;
  */
 public class MyCustomAdapter extends BaseAdapter {
     private ArrayList<String> mListItems;
-    private LayoutInflater mLayoutInflater;
+    
+    public ArrayList<String> getmListItems() {
+		return mListItems;
+	}
+
+	private LayoutInflater mLayoutInflater;
 
     public MyCustomAdapter(Context context, ArrayList<String> arrayList){
 
