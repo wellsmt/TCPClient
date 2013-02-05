@@ -3,7 +3,9 @@ package com.lp.io;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,7 +116,8 @@ public class SocketConnector extends Thread {
       this.dataInterpreter = dataInterpreter;
       state = SocketConnector.State.Connecting;
       try{
-         cSocket = new Socket(host, port);
+	  InetAddress serverAddr = InetAddress.getByName(host);
+         cSocket = new Socket(serverAddr, port);
          start();
       }
       catch(IOException err){
@@ -135,35 +138,40 @@ public class SocketConnector extends Thread {
    @Override
    public void run() {
       try {
-         cSocket.setTcpNoDelay(true);
+         //cSocket.setTcpNoDelay(true);
 
          setState(SocketConnector.State.Connected);
          byte[] buffer = new byte[bufferSize];
-         while (cSocket.isConnected()) {
+         BufferedInputStream in = new BufferedInputStream(cSocket.getInputStream());
+         while (state == State.Connected) {
             
             //This blocks
-            int read = cSocket.getInputStream().read(buffer, 0, bufferSize);
+            int read = in.read(buffer, 0, bufferSize);
             bytesReceived += read;
-            dataInterpreter.addRawData(Arrays.copyOf(buffer, read));
+            byte[] newBuf = new byte[read];
+            System.arraycopy(buffer,0,newBuf,0,read);
+            dataInterpreter.addRawData(newBuf);
          }
       } catch (Exception exp) {
          log.warning(exp.toString());
          setState(State.Failed);
       }
    }
-   /**
-    * Closes the socket connection. This method will swallow any
-    *  errors associated with closing the socket.
-    */
-   public void close(){
-	   try{
-		   if(isConnected() && null != cSocket){
-		   cSocket.close();
-		   }
-	   }catch(IOException err){
-		   log.warning("Could not close the socket. Reason: "+err.toString());
-	   }
-   }
+   
+    /**
+     * Closes the socket connection. This method will swallow any errors
+     * associated with closing the socket.
+     */
+    public void close() {
+	try {
+	    setState(State.Closed);
+	    if (isConnected() && null != cSocket) {
+		cSocket.close();
+	    }
+	} catch (IOException err) {
+	    log.warning("Could not close the socket. Reason: " + err.toString());
+	}
+    }
    
    /**
     * Returns true if the socket is connect to the peer.
@@ -196,9 +204,17 @@ public class SocketConnector extends Thread {
    }
 
    private ArrayList<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
+   /**
+    * Register a change listener for receiving state change updates.
+    * @param listener
+    */
    public void addChangeListener(PropertyChangeListener listener){
       listeners.add(listener);
    }
+   /**
+    * Removes a previously registered listener.
+    * @param listener
+    */
    public void removeChangeListener(PropertyChangeListener listener){
       listeners.remove(listener);
    }

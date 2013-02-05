@@ -15,7 +15,7 @@ public class Server extends Thread {
    int port;
    DataInterpreter clientConnectionInterpreter;
    static final int SAMPLES_PER_SEC = 1;
-   static final int TICKS_PER_SECOND = 1000;
+   static final int TICKS_PER_SECOND = 100;
    
    private int timeToSleepBtwSamples;
    
