@@ -1,4 +1,4 @@
-package com.lp.test_app;
+package com.example.tcpclient;
 
 import android.location.Address;
 
