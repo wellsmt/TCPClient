@@ -5,5 +5,6 @@
 	<classpathentry including="**" kind="src" path="src-io"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io-master"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

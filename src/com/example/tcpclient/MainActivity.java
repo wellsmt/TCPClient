@@ -2,9 +2,7 @@ package com.example.tcpclient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -27,8 +25,6 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpretor;
-import com.lp.io.Message;
-import com.lp.io.MessageConsumer;
 import com.lp.io.SocketConnector;
 
 /**
