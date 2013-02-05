@@ -156,98 +156,98 @@ public class MainActivity extends Activity
         
         // Create and register the device message consumer.
         messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
-        dataInterpretor.registerObserver(messageConsumer);
-        
-        connect.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(connection != null && connection.isConnected())
-				{
-					connection.close();
-					connect.setEnabled(true);
-					connect.setText("Connect");
-					return;
-				}
-				connect.setEnabled(false);
-				connect.setText("Connecting...");
-				new connectTask().execute("");
-			}
-		});
-        // connect to the server        
-        
-		send.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				try {
-					
-					String message = editText.getText().toString();
+	dataInterpretor.registerObserver(messageConsumer);
 
-					// add the text in the arrayList
-					arrayList.add("c: " + message);
+	connect.setOnClickListener(new View.OnClickListener() {
 
-					// sends the message to the server
-					if (connection != null) {
-						connection.send(message.getBytes());// sendMessage(message);
-					}
-
-					// refresh the list
-					mAdapter.notifyDataSetChanged();
-					editText.setText("");
-				} catch (Exception err) {
-					Log.e("TCP CLIENT",
-							"An error occured while trying to send data to peer.",
-							err);
-				}
-			}
-		});
-
-	}
-    
-    public class connectTask extends AsyncTask<String,String,TCPClient> implements PropertyChangeListener{    	
-    	
-        @Override
-        protected TCPClient doInBackground(String... message) {        	
-        	// create file pointer only once            
-			dir.mkdirs();
-			filename = Long.toString(System.currentTimeMillis());
-			try {
-				fileWriter.startNewFile(filename);
-			} catch (IOException err) {
-				Log.e(LogFileWriter.TAG,
-						"Could not open log file. No data log will be created.",
-						err);
-			}
-			// Attempt connection.
-			int port = Integer.valueOf(portInput.getText().toString());
-			String host = ipAddressInput.getText().toString();
-			connection = new SocketConnector(host, port, dataInterpretor);
-			connection.addChangeListener(this);
-			
-			return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            if(connection.isConnected()){
-            	connect.setText("Disconnect");
-            	connect.setEnabled(true);
-				send.setEnabled(true);
-            }else{
-                connect.setText("Connect");
-                connect.setEnabled(true);
-				send.setEnabled(false);
-            }
-            //Clean up the reference to this so that we don't keep any
-            // unneeded references.
-            connection.removeChangeListener(this);
-        }
-
-		@Override
-		public void propertyChange(PropertyChangeEvent event) {
-			publishProgress();
+	    @Override
+	    public void onClick(View v) {
+		if (connection != null && connection.isConnected()) {
+		    connection.close();
+		    connect.setEnabled(true);
+		    connect.setText("Connect");
+		    return;
 		}
+		connect.setEnabled(false);
+		connect.setText("Connecting...");
+		new connectTask().execute("");
+	    }
+	});
+	// connect to the server
+
+	send.setOnClickListener(new View.OnClickListener() {
+	    @Override
+	    public void onClick(View view) {
+		try {
+
+		    String message = editText.getText().toString();
+
+		    // add the text in the arrayList
+		    arrayList.add("c: " + message);
+
+		    // sends the message to the server
+		    if (connection != null) {
+			connection.send(message.getBytes());// sendMessage(message);
+		    }
+
+		    // refresh the list
+		    mAdapter.notifyDataSetChanged();
+		    editText.setText("");
+		} catch (Exception err) {
+		    Log.e("TCP CLIENT",
+			    "An error occured while trying to send data to peer.",
+			    err);
+		}
+	    }
+	});
+
     }
-    
+
+    public class connectTask extends AsyncTask<String, String, TCPClient>
+	    implements PropertyChangeListener {
+
+	@Override
+	protected TCPClient doInBackground(String... message) {
+	    // create file pointer only once
+	    dir.mkdirs();
+	    filename = Long.toString(System.currentTimeMillis());
+	    try {
+		fileWriter.startNewFile(filename);
+	    } catch (IOException err) {
+		Log.e(LogFileWriter.TAG,
+			"Could not open log file. No data log will be created.",
+			err);
+	    }
+	    // Attempt connection.
+	    int port = Integer.valueOf(portInput.getText().toString());
+	    String host = ipAddressInput.getText().toString();
+	    connection = new SocketConnector(host, port, dataInterpretor);
+	    connection.addChangeListener(this);
+
+	    return null;
+	}
+
+	@Override
+	protected void onProgressUpdate(String... values) {
+	    super.onProgressUpdate(values);
+	    if (connection.isConnected()) {
+		connect.setText("Disconnect");
+		connect.setEnabled(true);
+		send.setEnabled(true);
+	    } else {
+		connect.setText("Connect");
+		connect.setEnabled(true);
+		send.setEnabled(false);
+	    }
+	    // Clean up the reference to this so that we don't keep any
+	    // unneeded references.
+	    connection.removeChangeListener(this);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+	    publishProgress();
+	}
+    }
+
 }
