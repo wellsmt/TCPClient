@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
@@ -48,6 +49,7 @@ public class MainActivity extends Activity
     private EditText ipAddressInput;
     private EditText portInput;
     private Button connect;
+    private ToggleButton toggleRecord;
     
     private DataInterpreter dataInterpretor;
     
@@ -127,6 +129,7 @@ public class MainActivity extends Activity
         send = (Button)findViewById(R.id.send_button);
         send.setEnabled(false);
         connect = (Button)findViewById(R.id.connect_button);
+        toggleRecord = (ToggleButton)findViewById(R.id.toggleRecord);
         
         ipAddressInput = (EditText)findViewById(R.id.ip_address);
         portInput =  (EditText)findViewById(R.id.port);
@@ -165,10 +168,22 @@ public class MainActivity extends Activity
 		    return;
 		}
 		connect.setEnabled(false);
-		connect.setText("Connecting...");
-		new connectTask().execute("");
+		connect.setText("Connecting...");		
 	    }
 	});
+	
+	// TODO: Add a listener to the OnOffTOggle
+	toggleRecord.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if(toggleRecord.isChecked()){
+				new connectTask().execute("");
+			} else {
+				// Do nothing
+			}
+		}
+	})
 	// connect to the server
 
 	send.setOnClickListener(new View.OnClickListener() {
