@@ -14,14 +14,14 @@ public class SimpleDeviceMessageTest {
 
 	@Test
 	public void testValueSet() {
-		SimpleDeviceMessage msg = new SimpleDeviceMessage("1,123456,0.298348957");
+		SimpleDeviceMessage msg = new SimpleDeviceMessage(" 1, 123456,  0.298348957");
 		assertEquals(0.298348757, msg.getValue(),0.00001);
 	}
 	
 	@Test
 	public void testIncorrectFormat(){
 	    SimpleDeviceMessage msg = new SimpleDeviceMessage("");
-	    assertEquals(0,msg.getChannel());
+	    assertEquals(-1,msg.getChannel());
 	    assertEquals(0.0, msg.getValue(), 0.0001);
 	}
 	

@@ -27,9 +27,9 @@ public class SimpleDeviceMessage extends Message {
 	super(data);
 	String[] split = data.split(",");
 	if (split.length == EXPECTED_NUMBER_OF_PARAMS) {
-	    channel = Integer.parseInt(split[CHANNEL_INDEX]);
-	    deviceTimestamp = Long.parseLong(split[TIME_STAMP_INDEX]);
-	    value = Double.parseDouble(split[VALUE_INDEX]);
+	    channel = Integer.parseInt(split[CHANNEL_INDEX].trim());
+	    deviceTimestamp = Long.parseLong(split[TIME_STAMP_INDEX].trim());
+	    value = Double.parseDouble(split[VALUE_INDEX].trim());
 	}
     }
 

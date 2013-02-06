@@ -156,6 +156,17 @@ public class SocketConnector extends Thread {
          log.warning(exp.toString());
          setState(State.Failed);
       }
+      finally{
+	  if(cSocket != null){
+	      try {
+		cSocket.close();
+	    } catch (IOException e) {
+		log.warning("Unable to close connection.");
+		
+	    }
+	  }
+	  setState(State.Closed);
+      }
    }
    
     /**
