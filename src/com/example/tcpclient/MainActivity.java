@@ -2,9 +2,7 @@ package com.example.tcpclient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -18,6 +16,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ToggleButton;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -27,8 +26,6 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpretor;
-import com.lp.io.Message;
-import com.lp.io.MessageConsumer;
 import com.lp.io.SocketConnector;
 
 /**
@@ -51,7 +48,7 @@ public class MainActivity extends Activity
     private String extension=".txt";
     private EditText ipAddressInput;
     private EditText portInput;
-    private Button connect;
+    private Button connect;    
     
     private DataInterpreter dataInterpretor;
     
@@ -60,7 +57,6 @@ public class MainActivity extends Activity
     private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
     
     private XYPlot dynamicPlot;
-
 
     @SuppressWarnings("deprecation")
 	protected void onCreatePlot(){
@@ -120,6 +116,7 @@ public class MainActivity extends Activity
     
     private connectTask task;
     private Button send;
+    private ToggleButton record;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -132,6 +129,7 @@ public class MainActivity extends Activity
         send = (Button)findViewById(R.id.send_button);
         send.setEnabled(false);
         connect = (Button)findViewById(R.id.connect_button);
+        record = (ToggleButton)findViewById(R.id.toggleRecord);
         
         ipAddressInput = (EditText)findViewById(R.id.ip_address);
         portInput =  (EditText)findViewById(R.id.port);
@@ -140,31 +138,26 @@ public class MainActivity extends Activity
         mAdapter = new MyCustomAdapter(this, arrayList);
 
     	onCreatePlot();
-        
-        
+                
         mList.setAdapter(mAdapter);
         
         dataInterpretor = new DeviceMessageInterpretor();
-
         
         // Create and register the device message consumer.
         listUpdater = new ListViewUpdater(this, mAdapter);
-        dataInterpretor.registerObserver(listUpdater);
-        
-        //Create and register the log file writer
-        fileWriter = new LogFileWriter(dir.getAbsolutePath(),extension);
-        dataInterpretor.registerObserver(fileWriter);
+        dataInterpretor.registerObserver(listUpdater);       
         
         // Create and register the device message consumer.
         messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
-	dataInterpretor.registerObserver(messageConsumer);
+        dataInterpretor.registerObserver(messageConsumer);
 
-	connect.setOnClickListener(new View.OnClickListener() {
+        connect.setOnClickListener(new View.OnClickListener() {
 
 	    @Override
 	    public void onClick(View v) {
 		if (connection != null && connection.isConnected()) {
-		    connection.close();
+		    //TODO: Not implemented
+			//connection.close();
 		    connect.setEnabled(true);
 		    connect.setText("Connect");
 		    if(task!= null){
@@ -206,6 +199,30 @@ public class MainActivity extends Activity
 	    }
 	});
 
+	record.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+	        if(record.isChecked()){
+	        	//Create and register the log file writer
+	        	fileWriter = new LogFileWriter(dir.getAbsolutePath(),extension);
+	        	dataInterpretor.registerObserver(fileWriter);
+	        
+	        	dir.mkdirs();
+	        	filename = Long.toString(System.currentTimeMillis());
+	        	try {
+	        		fileWriter.startNewFile(filename);
+	        	} catch (IOException err) {
+	        		Log.e(LogFileWriter.TAG,
+	        				"Could not open log file. No data log will be created.",
+	        				err);
+	        	}
+	        } else {
+	        	dataInterpretor.removeObserver(fileWriter);	        	
+	        }
+		}
+	});
+		
     }
 
     public class connectTask extends AsyncTask<String, String, TCPClient>
@@ -213,17 +230,7 @@ public class MainActivity extends Activity
 
 	@Override
 	protected TCPClient doInBackground(String... message) {
-	    try {
-		// create file pointer only once
-		dir.mkdirs();
-		filename = Long.toString(System.currentTimeMillis());
-		try {
-		    fileWriter.startNewFile(filename);
-		} catch (IOException err) {
-		    Log.e(LogFileWriter.TAG,
-			    "Could not open log file. No data log will be created.",
-			    err);
-		}
+	    try {		
 		// Attempt connection.
 		int port = Integer.valueOf(portInput.getText().toString());
 		String host = ipAddressInput.getText().toString();

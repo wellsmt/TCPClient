@@ -50,34 +50,21 @@
         android:layout_marginTop="10dp"
         title="Data Chart" />
 
-    <LinearLayout
+    <ToggleButton
+        android:id="@+id/toggleRecord"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:textOn="Recording"
+        android:textOff="Record"/>
 
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:cacheColorHint="#00000000"
-            android:listSelector="@android:color/transparent"
-            android:transcriptMode="alwaysScroll" >
-        </ListView>
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="173dp"
-            android:layout_height="wrap_content"
-            android:text="Record"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <ToggleButton
-            android:id="@+id/toggleRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ToggleButton" />
-
-    </LinearLayout>
+    <ListView android:id="@+id/list"
+              android:layout_width="fill_parent"
+              android:layout_height="0dip"
+              android:layout_weight="1"
+              android:transcriptMode="alwaysScroll"
+              android:cacheColorHint="#00000000"
+              android:listSelector="@android:color/transparent"/>
 
 
     <LinearLayout android:id="@+id/footer"
@@ -86,5 +73,17 @@
                   android:orientation="horizontal"
                   android:gravity="bottom">
 
+        <EditText android:inputType="textMultiLine|textNoSuggestions"
+                  android:layout_width="0dp"
+                  android:layout_height="40dp"
+                  android:id="@+id/editText"
+                  android:layout_weight="1"/>
+
+
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/send_button"
+                android:layout_gravity="center_vertical"
+                android:text="send" />
     </LinearLayout>
 </LinearLayout>
