@@ -16,9 +16,9 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ToggleButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
@@ -155,9 +155,8 @@ public class MainActivity extends Activity
 
 	    @Override
 	    public void onClick(View v) {
-		if (connection != null && connection.isConnected()) {
-		    //TODO: Not implemented
-			//connection.close();
+		if (connection != null && connection.isConnected()) {		    
+			connection.close();
 		    connect.setEnabled(true);
 		    connect.setText("Connect");
 		    if(task!= null){
