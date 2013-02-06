@@ -118,6 +118,7 @@ public class MainActivity extends Activity
 
     }
     
+    private connectTask task;
     private Button send;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -166,11 +167,15 @@ public class MainActivity extends Activity
 		    connection.close();
 		    connect.setEnabled(true);
 		    connect.setText("Connect");
+		    if(task!= null){
+			task.cancel(true);
+		    }
 		    return;
 		}
 		connect.setEnabled(false);
 		connect.setText("Connecting...");
-		new connectTask().execute("");
+		task = new connectTask();
+		task.execute("");
 	    }
 	});
 	// connect to the server
@@ -208,29 +213,33 @@ public class MainActivity extends Activity
 
 	@Override
 	protected TCPClient doInBackground(String... message) {
-	    // create file pointer only once
-	    dir.mkdirs();
-	    filename = Long.toString(System.currentTimeMillis());
 	    try {
-		fileWriter.startNewFile(filename);
-	    } catch (IOException err) {
-		Log.e(LogFileWriter.TAG,
-			"Could not open log file. No data log will be created.",
-			err);
+		// create file pointer only once
+		dir.mkdirs();
+		filename = Long.toString(System.currentTimeMillis());
+		try {
+		    fileWriter.startNewFile(filename);
+		} catch (IOException err) {
+		    Log.e(LogFileWriter.TAG,
+			    "Could not open log file. No data log will be created.",
+			    err);
+		}
+		// Attempt connection.
+		int port = Integer.valueOf(portInput.getText().toString());
+		String host = ipAddressInput.getText().toString();
+		connection = new SocketConnector(host, port, dataInterpretor);
+		connection.addChangeListener(this);
+	    } catch (Exception err) {
+		Log.e("CONNECTION FAILURE", "Error connecting to device. Reason: "+err.getMessage());
+		onProgressUpdate();
 	    }
-	    // Attempt connection.
-	    int port = Integer.valueOf(portInput.getText().toString());
-	    String host = ipAddressInput.getText().toString();
-	    connection = new SocketConnector(host, port, dataInterpretor);
-	    connection.addChangeListener(this);
-
 	    return null;
 	}
 
 	@Override
 	protected void onProgressUpdate(String... values) {
 	    super.onProgressUpdate(values);
-	    if (connection.isConnected()) {
+	    if (connection != null && connection.isConnected()) {
 		connect.setText("Disconnect");
 		connect.setEnabled(true);
 		send.setEnabled(true);
@@ -239,9 +248,11 @@ public class MainActivity extends Activity
 		connect.setEnabled(true);
 		send.setEnabled(false);
 	    }
-	    // Clean up the reference to this so that we don't keep any
-	    // unneeded references.
-	    connection.removeChangeListener(this);
+	    if(connection != null){
+		// Clean up the reference to this so that we don't keep any
+		// unneeded references.
+		connection.removeChangeListener(this);
+	    }
 	}
 
 	@Override
