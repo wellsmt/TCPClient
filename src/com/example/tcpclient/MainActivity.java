@@ -2,7 +2,9 @@ package com.example.tcpclient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -18,7 +20,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ToggleButton;
 
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
@@ -26,6 +27,8 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpretor;
+import com.lp.io.Message;
+import com.lp.io.MessageConsumer;
 import com.lp.io.SocketConnector;
 
 /**
@@ -49,7 +52,6 @@ public class MainActivity extends Activity
     private EditText ipAddressInput;
     private EditText portInput;
     private Button connect;
-    private ToggleButton toggleRecord;
     
     private DataInterpreter dataInterpretor;
     
@@ -116,6 +118,7 @@ public class MainActivity extends Activity
 
     }
     
+    private connectTask task;
     private Button send;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -129,7 +132,6 @@ public class MainActivity extends Activity
         send = (Button)findViewById(R.id.send_button);
         send.setEnabled(false);
         connect = (Button)findViewById(R.id.connect_button);
-        toggleRecord = (ToggleButton)findViewById(R.id.toggleRecord);
         
         ipAddressInput = (EditText)findViewById(R.id.ip_address);
         portInput =  (EditText)findViewById(R.id.port);
@@ -165,25 +167,17 @@ public class MainActivity extends Activity
 		    connection.close();
 		    connect.setEnabled(true);
 		    connect.setText("Connect");
+		    if(task!= null){
+			task.cancel(true);
+		    }
 		    return;
 		}
 		connect.setEnabled(false);
-		connect.setText("Connecting...");		
+		connect.setText("Connecting...");
+		task = new connectTask();
+		task.execute("");
 	    }
 	});
-	
-	// TODO: Add a listener to the OnOffTOggle
-	toggleRecord.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			if(toggleRecord.isChecked()){
-				new connectTask().execute("");
-			} else {
-				// Do nothing
-			}
-		}
-	})
 	// connect to the server
 
 	send.setOnClickListener(new View.OnClickListener() {
@@ -219,29 +213,33 @@ public class MainActivity extends Activity
 
 	@Override
 	protected TCPClient doInBackground(String... message) {
-	    // create file pointer only once
-	    dir.mkdirs();
-	    filename = Long.toString(System.currentTimeMillis());
 	    try {
-		fileWriter.startNewFile(filename);
-	    } catch (IOException err) {
-		Log.e(LogFileWriter.TAG,
-			"Could not open log file. No data log will be created.",
-			err);
+		// create file pointer only once
+		dir.mkdirs();
+		filename = Long.toString(System.currentTimeMillis());
+		try {
+		    fileWriter.startNewFile(filename);
+		} catch (IOException err) {
+		    Log.e(LogFileWriter.TAG,
+			    "Could not open log file. No data log will be created.",
+			    err);
+		}
+		// Attempt connection.
+		int port = Integer.valueOf(portInput.getText().toString());
+		String host = ipAddressInput.getText().toString();
+		connection = new SocketConnector(host, port, dataInterpretor);
+		connection.addChangeListener(this);
+	    } catch (Exception err) {
+		Log.e("CONNECTION FAILURE", "Error connecting to device. Reason: "+err.getMessage());
+		onProgressUpdate();
 	    }
-	    // Attempt connection.
-	    int port = Integer.valueOf(portInput.getText().toString());
-	    String host = ipAddressInput.getText().toString();
-	    connection = new SocketConnector(host, port, dataInterpretor);
-	    connection.addChangeListener(this);
-
 	    return null;
 	}
 
 	@Override
 	protected void onProgressUpdate(String... values) {
 	    super.onProgressUpdate(values);
-	    if (connection.isConnected()) {
+	    if (connection != null && connection.isConnected()) {
 		connect.setText("Disconnect");
 		connect.setEnabled(true);
 		send.setEnabled(true);
@@ -250,9 +248,11 @@ public class MainActivity extends Activity
 		connect.setEnabled(true);
 		send.setEnabled(false);
 	    }
-	    // Clean up the reference to this so that we don't keep any
-	    // unneeded references.
-	    connection.removeChangeListener(this);
+	    if(connection != null){
+		// Clean up the reference to this so that we don't keep any
+		// unneeded references.
+		connection.removeChangeListener(this);
+	    }
 	}
 
 	@Override
