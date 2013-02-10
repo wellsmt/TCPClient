@@ -26,11 +26,12 @@ public class DeviceConnectionsActivity extends Activity {
     private EditText portInput;
     private Button connect;
     private BackgroundConnectionTask connectionTask;
+    private Context context;
 
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.devices_layout);
-
+	 context = getApplicationContext();
 	ipAddressInput = (EditText) findViewById(R.id.ip_address2);
 	portInput = (EditText) findViewById(R.id.port2);
 	connect = (Button) findViewById(R.id.connect_button2);
@@ -44,8 +45,13 @@ public class DeviceConnectionsActivity extends Activity {
 	connectionTask.execute("");
     }
     
-    public void disconnectClickHandler(View view) {
-	//TODO: Implement me!!
+    public void closeAllClickHandler(View view) {
+	ConnectionManager.INSTANCE.closeAll();
+	
+	CharSequence text = "All connections have been closed.";
+	Toast heresToASuccessfulConnection = Toast.makeText(context,
+		text, Toast.LENGTH_SHORT);
+	heresToASuccessfulConnection.show();
     }
 
     /**
@@ -68,7 +74,6 @@ public class DeviceConnectionsActivity extends Activity {
 	}
 
 	private SocketConnector connection;
-	private Context context = getApplicationContext();
 
 	@Override
 	protected String doInBackground(String... message) {

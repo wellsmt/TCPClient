@@ -38,4 +38,10 @@ public enum ConnectionManager {
     public MessageProducer getConnectionMessageProducer(){
 	return dataInterpreter;
     }
+    
+    public void closeAll(){
+	if(connection != null){
+	    connection.close();
+	}
+    }
 }
