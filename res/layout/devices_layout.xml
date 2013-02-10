@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/ipLabel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/ip_address2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.75"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/portLabel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Port"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText android:layout_width="0dp"
+                  android:layout_height="40dp"
+                  android:id="@+id/port2"
+                  android:inputType="number"
+                  android:layout_weight="1"
+                  android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/connect_button2"
+                android:layout_gravity="center_vertical"
+                android:onClick="connectClickHandler"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="connect" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        </LinearLayout>
+
+</ScrollView>

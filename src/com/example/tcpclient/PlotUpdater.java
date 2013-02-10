@@ -46,7 +46,7 @@ public class PlotUpdater implements MessageConsumer, Runnable {
 	SimpleDeviceMessage deviceMsg = (SimpleDeviceMessage) msg;
 	int channel = deviceMsg.getChannel();
 	if (channel < series.length) {
-	    series[channel].addLast(deviceMsg.getTimestamp(),
+	    series[channel].addLast(deviceMsg.getDeviceTimestamp(),
 		    deviceMsg.getValue());
 	} else {
 	    Log.e("DATA SERIES",

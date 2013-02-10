@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.androidplot.xy.BoundaryMode;
@@ -50,15 +51,17 @@ public class MainActivity extends Activity
     private EditText portInput;
     private Button connect;    
     
-    private DataInterpreter dataInterpretor;
+    //private DataInterpreter dataInterpretor;
     
     private LogFileWriter fileWriter;
-    private PlotUpdater messageConsumer;
-    private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
+   // private PlotUpdater messageConsumer;
+   // private TableUpdater tableUpdater;
+   // private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
     
-    private XYPlot dynamicPlot;
+    
+   // private XYPlot dynamicPlot;
 
-    @SuppressWarnings("deprecation")
+   /* @SuppressWarnings("deprecation")
 	protected void onCreatePlot(){
         // get handles to our View defined in layout.xml:
         dynamicPlot = (XYPlot) findViewById(R.id.dynamicPlot);
@@ -112,10 +115,10 @@ public class MainActivity extends Activity
         // freeze the range boundaries:
         dynamicPlot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
 
-    }
+    }*/
     
-    private connectTask task;
-    private Button send;
+    //private connectTask task;
+   // private Button send;
     private ToggleButton record;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -125,32 +128,31 @@ public class MainActivity extends Activity
 
         arrayList = new ArrayList<String>();
 
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        send = (Button)findViewById(R.id.send_button);
-        send.setEnabled(false);
-        connect = (Button)findViewById(R.id.connect_button);
+        //send.setEnabled(false);
+        //connect = (Button)findViewById(R.id.connect_button);
         record = (ToggleButton)findViewById(R.id.toggleRecord);
         
-        ipAddressInput = (EditText)findViewById(R.id.ip_address);
-        portInput =  (EditText)findViewById(R.id.port);
+        //ipAddressInput = (EditText)findViewById(R.id.ip_address);
+        //portInput =  (EditText)findViewById(R.id.port);
         //relate the listView from java to the one created in xml
         mList = (ListView)findViewById(R.id.list);
         mAdapter = new MyCustomAdapter(this, arrayList);
 
-    	onCreatePlot();
+    	//onCreatePlot();
                 
         mList.setAdapter(mAdapter);
         
-        dataInterpretor = new DeviceMessageInterpretor();
+        //dataInterpretor = new DeviceMessageInterpretor();
         
         // Create and register the device message consumer.
         listUpdater = new ListViewUpdater(this, mAdapter);
-        dataInterpretor.registerObserver(listUpdater);       
+        ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(listUpdater);       
         
         // Create and register the device message consumer.
-        messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
-        dataInterpretor.registerObserver(messageConsumer);
-
+        //messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
+        //dataInterpretor.registerObserver(messageConsumer);
+        
+        /*
         connect.setOnClickListener(new View.OnClickListener() {
 
 	    @Override
@@ -169,10 +171,11 @@ public class MainActivity extends Activity
 		task = new connectTask();
 		task.execute("");
 	    }
-	});
+	});*/
+       
 	// connect to the server
 
-	send.setOnClickListener(new View.OnClickListener() {
+	/*send.setOnClickListener(new View.OnClickListener() {
 	    @Override
 	    public void onClick(View view) {
 		try {
@@ -187,7 +190,7 @@ public class MainActivity extends Activity
 			connection.send(message.getBytes());// sendMessage(message);
 		    }
 
-		    // refresh the list
+		    // refresh the consumerlist
 		    mAdapter.notifyDataSetChanged();
 		    editText.setText("");
 		} catch (Exception err) {
@@ -196,7 +199,7 @@ public class MainActivity extends Activity
 			    err);
 		}
 	    }
-	});
+	});*/
 
 	record.setOnClickListener(new View.OnClickListener() {
 		
@@ -205,7 +208,7 @@ public class MainActivity extends Activity
 	        if(record.isChecked()){
 	        	//Create and register the log file writer
 	        	fileWriter = new LogFileWriter(dir.getAbsolutePath(),extension);
-	        	dataInterpretor.registerObserver(fileWriter);
+	        	ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(fileWriter);
 	        
 	        	dir.mkdirs();
 	        	filename = Long.toString(System.currentTimeMillis());
@@ -217,14 +220,14 @@ public class MainActivity extends Activity
 	        				err);
 	        	}
 	        } else {
-	        	dataInterpretor.removeObserver(fileWriter);	        	
+	            ConnectionManager.INSTANCE.getConnectionMessageProducer().removeObserver(fileWriter);	        	
 	        }
 		}
 	});
 		
     }
 
-    public class connectTask extends AsyncTask<String, String, TCPClient>
+    /*public class connectTask extends AsyncTask<String, String, TCPClient>
 	    implements PropertyChangeListener {
 
 	@Override
@@ -248,11 +251,11 @@ public class MainActivity extends Activity
 	    if (connection != null && connection.isConnected()) {
 		connect.setText("Disconnect");
 		connect.setEnabled(true);
-		send.setEnabled(true);
+		//send.setEnabled(true);
 	    } else {
 		connect.setText("Connect");
 		connect.setEnabled(true);
-		send.setEnabled(false);
+		//send.setEnabled(false);
 	    }
 	    if(connection != null){
 		// Clean up the reference to this so that we don't keep any
@@ -265,6 +268,6 @@ public class MainActivity extends Activity
 	public void propertyChange(PropertyChangeEvent event) {
 	    publishProgress();
 	}
-    }
+    }*/
 
 }
