@@ -141,7 +141,7 @@ public class MainActivity extends Activity
                 
         mList.setAdapter(mAdapter);
         
-        dataInterpretor = new DeviceMessageInterpretor();
+        //dataInterpretor = new DeviceMessageInterpretor();
         
         // Create and register the device message consumer.
         listUpdater = new ListViewUpdater(this, mAdapter);
