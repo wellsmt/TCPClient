@@ -1,16 +1,10 @@
 package com.example.tcpclient;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,15 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
-import com.lp.io.DataInterpreter;
-import com.lp.io.DeviceMessageInterpretor;
 import com.lp.io.SocketConnector;
 
 /**
