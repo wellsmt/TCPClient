@@ -3,16 +3,41 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/list_item"
+        android:layout_height="wrap_content"
+        android:id="@+id/device_info_row"
         android:gravity="center_vertical">
 
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1" />
+<TableLayout android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+<TableRow >
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:id="@+id/list_item_text_view"
-              android:textSize="20sp"
-              android:padding="10dp"
+              android:text="Host Name" />
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/device_name_text_view"
               android:layout_marginLeft="5dp"/>
-    <Button android:text="Disconnect"/>
+</TableRow>
+    <TableRow >
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="MAC Address" />
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/device_mac_text_view"
+                  android:layout_marginLeft="5dp"/>
+    </TableRow>
+    <TableRow >
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Disconnect" />
+    </TableRow>
+</TableLayout>
 </LinearLayout>

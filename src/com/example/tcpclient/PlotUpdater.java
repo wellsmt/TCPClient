@@ -12,7 +12,7 @@ import com.lp.io.SimpleDeviceMessage;
 
 /**
  * The plot updater is a consumer of devices messages from the IO data
- * interpretor. Messages received by this class are added to the corresponding
+ * Interpreter. Messages received by this class are added to the corresponding
  * plot series and the UI is refreshed. This class also implements runnable to
  * ensure that the UI updates occur in the activities UI thread.
  * 

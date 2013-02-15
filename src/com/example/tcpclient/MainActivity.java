@@ -148,58 +148,6 @@ public class MainActivity extends Activity
         listUpdater = new ListViewUpdater(this, mAdapter);
         ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(listUpdater);       
         
-        // Create and register the device message consumer.
-        //messageConsumer = new PlotUpdater(dataSeries, this,dynamicPlot);
-        //dataInterpretor.registerObserver(messageConsumer);
-        
-        /*
-        connect.setOnClickListener(new View.OnClickListener() {
-
-	    @Override
-	    public void onClick(View v) {
-		if (connection != null && connection.isConnected()) {		    
-			connection.close();
-		    connect.setEnabled(true);
-		    connect.setText("Connect");
-		    if(task!= null){
-			task.cancel(true);
-		    }
-		    return;
-		}
-		connect.setEnabled(false);
-		connect.setText("Connecting...");
-		task = new connectTask();
-		task.execute("");
-	    }
-	});*/
-       
-	// connect to the server
-
-	/*send.setOnClickListener(new View.OnClickListener() {
-	    @Override
-	    public void onClick(View view) {
-		try {
-
-		    String message = editText.getText().toString();
-
-		    // add the text in the arrayList
-		    arrayList.add("c: " + message);
-
-		    // sends the message to the server
-		    if (connection != null) {
-			connection.send(message.getBytes());// sendMessage(message);
-		    }
-
-		    // refresh the consumerlist
-		    mAdapter.notifyDataSetChanged();
-		    editText.setText("");
-		} catch (Exception err) {
-		    Log.e("TCP CLIENT",
-			    "An error occured while trying to send data to peer.",
-			    err);
-		}
-	    }
-	});*/
 
 	record.setOnClickListener(new View.OnClickListener() {
 		
@@ -226,48 +174,5 @@ public class MainActivity extends Activity
 	});
 		
     }
-
-    /*public class connectTask extends AsyncTask<String, String, TCPClient>
-	    implements PropertyChangeListener {
-
-	@Override
-	protected TCPClient doInBackground(String... message) {
-	    try {		
-		// Attempt connection.
-		int port = Integer.valueOf(portInput.getText().toString());
-		String host = ipAddressInput.getText().toString();
-		connection = new SocketConnector(host, port, dataInterpretor);
-		connection.addChangeListener(this);
-	    } catch (Exception err) {
-		Log.e("CONNECTION FAILURE", "Error connecting to device. Reason: "+err.getMessage());
-		onProgressUpdate();
-	    }
-	    return null;
-	}
-
-	@Override
-	protected void onProgressUpdate(String... values) {
-	    super.onProgressUpdate(values);
-	    if (connection != null && connection.isConnected()) {
-		connect.setText("Disconnect");
-		connect.setEnabled(true);
-		//send.setEnabled(true);
-	    } else {
-		connect.setText("Connect");
-		connect.setEnabled(true);
-		//send.setEnabled(false);
-	    }
-	    if(connection != null){
-		// Clean up the reference to this so that we don't keep any
-		// unneeded references.
-		connection.removeChangeListener(this);
-	    }
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-	    publishProgress();
-	}
-    }*/
 
 }
