@@ -1,16 +1,10 @@
 package com.example.tcpclient;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,15 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
-import com.lp.io.DataInterpreter;
-import com.lp.io.DeviceMessageInterpretor;
 import com.lp.io.SocketConnector;
 
 /**
@@ -49,7 +36,7 @@ public class MainActivity extends Activity
     private String extension=".txt";
     private EditText ipAddressInput;
     private EditText portInput;
-    private Button connect;    
+    private Button connect;          
     
     //private DataInterpreter dataInterpretor;
     
@@ -120,6 +107,7 @@ public class MainActivity extends Activity
     //private connectTask task;
    // private Button send;
     private ToggleButton record;
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -131,7 +119,7 @@ public class MainActivity extends Activity
         //send.setEnabled(false);
         //connect = (Button)findViewById(R.id.connect_button);
         record = (ToggleButton)findViewById(R.id.toggleRecord);
-        
+                
         //ipAddressInput = (EditText)findViewById(R.id.ip_address);
         //portInput =  (EditText)findViewById(R.id.port);
         //relate the listView from java to the one created in xml
@@ -149,8 +137,7 @@ public class MainActivity extends Activity
         ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(listUpdater);       
         
 
-	record.setOnClickListener(new View.OnClickListener() {
-		
+	record.setOnClickListener(new View.OnClickListener() {		
 		@Override
 		public void onClick(View v) {
 	        if(record.isChecked()){
@@ -171,7 +158,7 @@ public class MainActivity extends Activity
 	            ConnectionManager.INSTANCE.getConnectionMessageProducer().removeObserver(fileWriter);	        	
 	        }
 		}
-	});
+	});	
 		
     }
 

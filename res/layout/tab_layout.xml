@@ -7,6 +7,12 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+		<ToggleButton
+                android:id="@+id/toggleOrientFix"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textOn="Orientation Locked"
+        		android:textOff="Orientation UnLocked"/>
         <TabWidget
             android:id="@android:id/tabs"
             android:layout_width="fill_parent"
@@ -14,7 +20,9 @@
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:layout_height="fill_parent">            
+
+        </FrameLayout>
     </LinearLayout>
 
 </TabHost>
