@@ -36,7 +36,7 @@ public class MainActivity extends Activity
     private String extension=".txt";
     private EditText ipAddressInput;
     private EditText portInput;
-    private Button connect;    
+    private Button connect;          
     
     //private DataInterpreter dataInterpretor;
     
@@ -107,6 +107,7 @@ public class MainActivity extends Activity
     //private connectTask task;
    // private Button send;
     private ToggleButton record;
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -118,7 +119,7 @@ public class MainActivity extends Activity
         //send.setEnabled(false);
         //connect = (Button)findViewById(R.id.connect_button);
         record = (ToggleButton)findViewById(R.id.toggleRecord);
-        
+                
         //ipAddressInput = (EditText)findViewById(R.id.ip_address);
         //portInput =  (EditText)findViewById(R.id.port);
         //relate the listView from java to the one created in xml
@@ -188,8 +189,7 @@ public class MainActivity extends Activity
 	    }
 	});*/
 
-	record.setOnClickListener(new View.OnClickListener() {
-		
+	record.setOnClickListener(new View.OnClickListener() {		
 		@Override
 		public void onClick(View v) {
 	        if(record.isChecked()){
@@ -210,7 +210,7 @@ public class MainActivity extends Activity
 	            ConnectionManager.INSTANCE.getConnectionMessageProducer().removeObserver(fileWriter);	        	
 	        }
 		}
-	});
+	});	
 		
     }
 

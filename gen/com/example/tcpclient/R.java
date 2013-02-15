@@ -28,9 +28,10 @@ public final class R {
         public static final int list=0x7f090000;
         public static final int list_item=0x7f090002;
         public static final int list_item_text_view=0x7f090003;
-        public static final int menu_settings=0x7f09000b;
+        public static final int menu_settings=0x7f09000c;
         public static final int port2=0x7f090007;
         public static final int portLabel2=0x7f090006;
+        public static final int toggleOrientFix=0x7f09000b;
         public static final int toggleRecord=0x7f090001;
     }
     public static final class layout {
