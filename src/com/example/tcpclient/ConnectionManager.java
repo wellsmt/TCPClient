@@ -36,7 +36,8 @@ public enum ConnectionManager {
      */
     public static final int RESPONSE_PORT = 30303;
     
-    private UdpBroadcast broadcaster; 
+    private UdpBroadcast broadcaster;
+    private UdpListenThread listenThread;
     
     private Map<String,SocketConnector> connections = new HashMap<String,SocketConnector>();
     private Map<String,DataInterpreter> dataStream = new HashMap<String,DataInterpreter>();
@@ -71,6 +72,7 @@ public enum ConnectionManager {
     public UdpBroadcast getBroadcaster(Context context) throws IOException{
 	if(broadcaster == null){
 	    broadcaster = new UdpBroadcast(RESPONSE_PORT,getBroadcastAddress(context));
+	    listenThread = new UdpListenThread(broadcaster);
 	}
 	return broadcaster;
     }
@@ -94,9 +96,35 @@ public enum ConnectionManager {
 	    return InetAddress.getByAddress(quads);
     }
     
+    /**
+     * Closes the connections. Right now there is only one connection
+     * but that may change.
+     */
     public void closeAll(){
 	if(connection != null){
 	    connection.close();
 	}
+    }
+    
+    /**
+     * In order to make the UDP broad cast listen in the
+     *  background we have to run it in its own thread. Originally
+     *  I had set this up to just be an AsynchTask but that
+     *  doesn't work for blocking calls (like receive) on
+     *  Android 3.+ due to the API running all asynch tasks on
+     *  a single thread.
+     */
+    protected class UdpListenThread extends Thread{
+	/**
+	 * Constructor. Takes in the UdpBroadcast instance
+	 *  and runs it in its own thread.
+	 * @param broadcaster
+	 */
+	UdpListenThread(UdpBroadcast broadcaster){
+	    super(broadcaster);
+	    start();
+	}
+	
+	
     }
 }
