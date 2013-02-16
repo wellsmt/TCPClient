@@ -13,6 +13,12 @@ public class DeviceConnectionInformation {
     private int port;
     private String macAddress;
     
+    /**
+     * Constructor. 
+     * @param host The devices host name or IP address
+     * @param port The devices port (i.e 9760).
+     * @param macAddress
+     */
     public DeviceConnectionInformation(String host, int port, String macAddress) {
 	super();
 	this.host = host;
@@ -32,6 +38,10 @@ public class DeviceConnectionInformation {
     }
     
     @Override
+    /**
+     * Eclipse generated equals method. Hots, port and mac
+     *  must be equals.
+     */
     public boolean equals(Object obj) {
 	if (this == obj)
 	    return true;

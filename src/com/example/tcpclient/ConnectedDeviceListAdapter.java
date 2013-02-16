@@ -5,22 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
+/**
+ * This is the list adapter used for updating the Devices
+ *  List view.
+ * @author marc
+ *
+ */
 public class ConnectedDeviceListAdapter extends BaseAdapter {
+    private static final String TAG = "CONNECTED_DEVICE_LIST_ADAPTER";
+    /** The application context */
+    private Context context;
+    /** The list of devices that are known to the application */
     private List<DeviceConnectionInformation> devicesItems;
+    /** The layout inflater. */
+    private LayoutInflater layoutInflater;
     
-    private LayoutInflater mLayoutInflater;
+    private BackgroundConnectionTask task;
     
+    /**
+     * Constructor. Requires the application context. 
+     * @param context
+     */
     ConnectedDeviceListAdapter(Context context){
-	devicesItems = new ArrayList<DeviceConnectionInformation>();
-        //get the layout inflater
-        mLayoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	this.devicesItems = new ArrayList<DeviceConnectionInformation>();
+        
+	this.context = context;
+	//get the layout inflater
+        this.layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+    
     
     public void add(final DeviceConnectionInformation info){
 	devicesItems.add(info);
@@ -54,11 +75,11 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         //check to see if the reused view is null or not, if is not null then reuse it
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.device_info_row, null);
+            convertView = layoutInflater.inflate(R.layout.device_info_row, null);
         }
 
         //get the string item from the position "position" from array list to put it on the TextView
-        DeviceConnectionInformation  info = devicesItems.get(position);
+        final DeviceConnectionInformation  info = devicesItems.get(position);
         if (info != null) {
 
             TextView itemName = (TextView) convertView.findViewById(R.id.device_name_text_view);
@@ -72,6 +93,26 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
                 //set the item name on the TextView
         	macAddressView.setText(info.getMacAddress());
             }
+            final ToggleButton deviceConnectionToggle = (ToggleButton)convertView.findViewById(R.id.device_connection_toggle);
+            deviceConnectionToggle.setOnClickListener(new View.OnClickListener() {
+                private ToggleButton toggle = deviceConnectionToggle;
+                private DeviceConnectionInformation connectionInfo = info;
+    	    @Override
+    	    public void onClick(View v) {
+    		// Toggle Orientation Fix
+    		if(toggle.isChecked()){
+    		    Log.i(TAG,String.format("Starting background task to connect to %s:%d", connectionInfo.getHost(), connectionInfo.getPort()));
+    		    task = new BackgroundConnectionTask(context);
+    		    task.setHost(connectionInfo.getHost());
+    		    task.setPort(connectionInfo.getPort());
+    		    task.execute("");
+    		}
+    		else{
+    		    task.cancel(true);
+    		    ConnectionManager.INSTANCE.closeAll();
+    		}
+    	    }
+    	});
         }
 
         //this method must return the view corresponding to the data at the specified position.
