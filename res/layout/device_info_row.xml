@@ -1,18 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/device_info_row"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <ToggleButton  android:id="@+id/device_connection_toggle"
+                   android:layout_width="60dp" 
+                   android:layout_height="fill_parent"
+                   android:text="" />
+    <TableLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/list_item"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
+        <TableRow>
 
-    <TextView android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:id="@+id/list_item_text_view"
-              android:textSize="20sp"
-              android:padding="10dp"
-              android:layout_marginLeft="5dp"/>
-    <Button android:text="Disconnect"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Host Name" />
+
+            <TextView
+                android:id="@+id/device_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAC Address" />
+
+            <TextView
+                android:id="@+id/device_mac_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp" />
+        </TableRow>
+
+        <!--  TableRow>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Disconnect"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow-->
+    </TableLayout>
+
 </LinearLayout>
