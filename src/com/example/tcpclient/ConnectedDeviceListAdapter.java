@@ -2,6 +2,7 @@
 package com.example.tcpclient;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
@@ -45,6 +46,11 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     
     public void add(final DeviceConnectionInformation info){
 	devicesItems.add(info);
+	this.notifyDataSetChanged();
+    }
+    
+    public void addAll(Collection<? extends DeviceConnectionInformation> collection){
+	devicesItems.addAll(collection);
 	this.notifyDataSetChanged();
     }
     
