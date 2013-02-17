@@ -1,6 +1,7 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+import static com.example.tcpclient.ApplicationUtilities.toast;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -69,17 +70,10 @@ public class BackgroundConnectionTask extends
 	protected void onProgressUpdate(String... values) {
 	    super.onProgressUpdate(values);
 	    if (connection != null) {
-		
-		Toast heresToASuccessfulConnection = Toast.makeText(context,
-			toStatusMessage(connection.getConnectionState()), Toast.LENGTH_SHORT);
-		heresToASuccessfulConnection.show();
-		
+		toast(context, toStatusMessage(connection.getConnectionState()));
 		
 	    } else {
-		CharSequence text = "Failed to connect.";
-		Toast atLeastYouTried = Toast.makeText(context, text,
-			Toast.LENGTH_SHORT);
-		atLeastYouTried.show();
+		toast(context,"Failed to connect.");
 	    }
 	}
 	

@@ -1,6 +1,8 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,14 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 /**
- * This is the list adapter used for updating the Devices
- *  List view.
+ * This is the list adapter used for updating the Devices List view.
+ * 
  * @author marc
- *
+ * 
  */
 public class ConnectedDeviceListAdapter extends BaseAdapter {
     private static final String TAG = "CONNECTED_DEVICE_LIST_ADAPTER";
@@ -29,48 +32,50 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     private HashSet<DeviceConnectionInformation> devicesItems;
     /** The layout inflater. */
     private LayoutInflater layoutInflater;
-    
+
     private BackgroundConnectionTask task;
-    
+
     /**
-     * Constructor. Requires the application context. 
+     * Constructor. Requires the application context.
+     * 
      * @param context
      */
-    ConnectedDeviceListAdapter(Context context){
+    ConnectedDeviceListAdapter(Context context) {
 	this.devicesItems = new HashSet<DeviceConnectionInformation>();
-        
+
 	this.context = context;
-	//get the layout inflater
-        this.layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	// get the layout inflater
+	this.layoutInflater = (LayoutInflater) context
+		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-    
-    
-    public void add(final DeviceConnectionInformation info){
+
+    public void add(final DeviceConnectionInformation info) {
 	devicesItems.add(info);
 	this.notifyDataSetChanged();
     }
-    
-    public void addAll(Collection<? extends DeviceConnectionInformation> collection){
+
+    public void addAll(
+	    Collection<? extends DeviceConnectionInformation> collection) {
 	devicesItems.addAll(collection);
 	this.notifyDataSetChanged();
     }
-    
-    public void clear(){
+
+    public void clear() {
 	devicesItems.clear();
 	this.notifyDataSetChanged();
     }
-    
+
     @Override
     public int getCount() {
 	// TODO Auto-generated method stub
-	return  devicesItems.size();
+	return devicesItems.size();
     }
 
     @Override
     public Object getItem(int position) {
 	Iterator<DeviceConnectionInformation> iter = devicesItems.iterator();
 	DeviceConnectionInformation item = iter.next();
-	for(int ii = 1; ii <= position; ii++){
+	for (int ii = 1; ii <= position; ii++) {
 	    item = iter.next();
 	}
 	return item;
@@ -78,56 +83,90 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-	// TODO Auto-generated method stub
-	return 0;//(long)devicesItems.get(position).hashCode();
+	return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //check to see if the reused view is null or not, if is not null then reuse it
-        if (convertView == null) {
-            convertView = layoutInflater.inflate(R.layout.device_info_row, null);
-        }
+	// check to see if the reused view is null or not, if is not null then
+	// reuse it
+	if (convertView == null) {
+	    convertView = layoutInflater
+		    .inflate(R.layout.device_info_row, null);
+	}
 
-        //get the string item from the position "position" from array list to put it on the TextView
-        final DeviceConnectionInformation  info = (DeviceConnectionInformation) getItem(position);
-        if (info != null) {
+	// get the string item from the position "position" from array list to
+	// put it on the TextView
+	final DeviceConnectionInformation info = (DeviceConnectionInformation) getItem(position);
+	if (info != null) {	    
+	    TextView itemHostName = (TextView) convertView
+		    .findViewById(R.id.device_host_name_text_view);
+	    if (itemHostName != null) {
+		// set the item name on the TextView
+		itemHostName.setText(info.getHost());
+	    }
 
-            TextView itemName = (TextView) convertView.findViewById(R.id.device_name_text_view);
-            if (itemName != null) {
-                //set the item name on the TextView
-                itemName.setText(info.getHost());
-            }
-            
-            TextView macAddressView = (TextView) convertView.findViewById(R.id.device_mac_text_view);
-            if (macAddressView != null) {
-                //set the item name on the TextView
-        	macAddressView.setText(info.getMacAddress());
-            }
-            final ToggleButton deviceConnectionToggle = (ToggleButton)convertView.findViewById(R.id.device_connection_toggle);
-            deviceConnectionToggle.setOnClickListener(new View.OnClickListener() {
-                private ToggleButton toggle = deviceConnectionToggle;
-                private DeviceConnectionInformation connectionInfo = info;
-    	    @Override
-    	    public void onClick(View v) {
-    		// Toggle Orientation Fix
-    		if(toggle.isChecked()){
-    		    Log.i(TAG,String.format("Starting background task to connect to %s:%d", connectionInfo.getHost(), connectionInfo.getPort()));
-    		    task = new BackgroundConnectionTask(context);
-    		    task.setHost(connectionInfo.getHost());
-    		    task.setPort(connectionInfo.getPort());
-    		    task.execute("");
-    		}
-    		else{
-    		    task.cancel(true);
-    		    ConnectionManager.INSTANCE.closeAll();
-    		}
-    	    }
-    	});
-        }
+	    TextView macAddressView = (TextView) convertView
+		    .findViewById(R.id.device_mac_text_view);
+	    if (macAddressView != null) {
+		// set the item name on the TextView
+		macAddressView.setText(info.getMacAddress());
+	    }
+	    final ToggleButton deviceConnectionToggle = (ToggleButton) convertView
+		    .findViewById(R.id.device_connection_toggle);
+	    boolean isEnabled = ConnectionManager.INSTANCE.isAppConnected(info);
+	    deviceConnectionToggle.setChecked(isEnabled);
+	    
+	    deviceConnectionToggle
+		    .setOnClickListener(new View.OnClickListener() {
+			private ToggleButton toggle = deviceConnectionToggle;
+			private DeviceConnectionInformation connectionInfo = info;
 
-        //this method must return the view corresponding to the data at the specified position.
-        return convertView;
+			@Override
+			public void onClick(View v) {
+			    // Toggle Orientation Fix
+			    if (toggle.isChecked()) {
+				Log.i(TAG,
+					String.format(
+						"Starting background task to connect to %s:%d",
+						connectionInfo.getHost(),
+						connectionInfo.getPort()));
+				task = new BackgroundConnectionTask(context);
+				task.setHost(connectionInfo.getHost());
+				task.setPort(connectionInfo.getPort());
+				task.execute("");
+			    } else {
+				task.cancel(true);
+				ConnectionManager.INSTANCE.closeAll();
+			    }
+			}
+		    });
+	}
+
+	// this method must return the view corresponding to the data at the
+	// specified position.
+	return convertView;
+    }
+    
+    public class ToggleConnection implements View.OnClickListener, PropertyChangeListener{
+	private DeviceConnectionInformation info;
+	
+	ToggleConnection(DeviceConnectionInformation info){
+	    this.info = info;
+	}
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+	    // TODO Auto-generated method stub
+	    
+	}
+
+	@Override
+	public void onClick(View v) {
+	    // TODO Auto-generated method stub
+	    
+	}
+	
     }
 
 }

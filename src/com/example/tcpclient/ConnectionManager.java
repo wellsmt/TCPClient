@@ -44,9 +44,20 @@ public enum ConnectionManager {
     private SocketConnector connection;
     private DeviceMessageInterpretor dataInterpreter = new DeviceMessageInterpretor();
     
+    /**
+     * Socket connection factory method. Currently, the APP can only have one open
+     *  connection but that may change
+     * @param host
+     * @param port
+     * @return
+     */
     public SocketConnector createConnection(final String host, int port){
 	// Attempt connection.
 	try{
+	    if(connection !=null && connection.isConnected()){
+		connection.close();
+	    }
+	    
 	    Log.i(TAG, String.format("Creating connection to %s:%d", host,port));
 	    connection = new SocketConnector(host, port, dataInterpreter);
 	    return connection;
@@ -56,6 +67,22 @@ public enum ConnectionManager {
 	    
 	}
 	return null;
+    }
+    
+    /**
+     * Returns true if the application is connected to the device 
+     *  specified by the device connection info.
+     * @param info
+     * @return
+     */
+    public boolean isAppConnected(DeviceConnectionInformation info){
+	if(connection == null){
+	    return false;
+	}
+	if(connection.isConnected() && connection.getHost().equals(info.getHost())){
+	    return true;
+	}
+	return false;
     }
     
     public MessageProducer getConnectionMessageProducer(){
