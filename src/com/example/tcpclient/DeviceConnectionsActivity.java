@@ -11,12 +11,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import static com.example.tcpclient.ApplicationUtilities.toast;
 import com.lp.io.DeviceBroadcastMessage;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
@@ -42,7 +44,7 @@ public class DeviceConnectionsActivity extends Activity {
     private BackgroundDiscovery discovery;
     private BackgroundSend send;
     
-    private final String HELLO = "Who is out there?\r\n";
+    private final String HELLO = "Discovery: Who is out there?\r\n";
 
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -72,12 +74,14 @@ public class DeviceConnectionsActivity extends Activity {
 	connectionTask.execute("");
     }
 
+    /**
+     * Called by the close all button.
+     * @param view
+     */
     public void closeAllClickHandler(View view) {
 	ConnectionManager.INSTANCE.closeAll();
-
 	listAdapter.clear();
-	toast("All connections have been closed.");
-
+	toast(context, "All connections have been closed.");
     }
 
     /**
@@ -91,12 +95,6 @@ public class DeviceConnectionsActivity extends Activity {
 	send.execute(HELLO);
     }
 
-    protected void toast(final CharSequence message) {
-	Toast heresToASuccessfulConnection = Toast.makeText(context, message,
-		Toast.LENGTH_SHORT);
-	heresToASuccessfulConnection.show();
-    }
-
     public class BackgroundSend extends AsyncTask<String, String, String> {
 	private static final String TAG = "BACKGROUND_SEND_TASK";
 
@@ -105,6 +103,7 @@ public class DeviceConnectionsActivity extends Activity {
 	    try {
 		UdpBroadcast broadcaster = ConnectionManager.INSTANCE
 			.getBroadcaster(context);
+		Log.i(TAG, "Sending "+params[0]+" to the UDP broadcast socket.");
 		broadcaster.send(params[0]);
 		return null;
 	    } catch (IOException err) {
