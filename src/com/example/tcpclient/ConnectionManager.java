@@ -1,16 +1,13 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.util.Log;
 
 import com.lp.io.DeviceMessageInterpretor;
 import com.lp.io.MessageProducer;
 import com.lp.io.SocketConnector;
 /**
- * Singleton connection manager class. Managers connections and their
+ * Singleton connection manager class. Manages connections and their
  *  data interpreters. A singleton instance is used so that connections
  *  persist between views.
  * @author marc
