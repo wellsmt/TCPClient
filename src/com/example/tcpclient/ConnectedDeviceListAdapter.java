@@ -3,7 +3,8 @@ package com.example.tcpclient;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.util.Log;
@@ -25,7 +26,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     /** The application context */
     private Context context;
     /** The list of devices that are known to the application */
-    private List<DeviceConnectionInformation> devicesItems;
+    private HashSet<DeviceConnectionInformation> devicesItems;
     /** The layout inflater. */
     private LayoutInflater layoutInflater;
     
@@ -36,7 +37,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
      * @param context
      */
     ConnectedDeviceListAdapter(Context context){
-	this.devicesItems = new ArrayList<DeviceConnectionInformation>();
+	this.devicesItems = new HashSet<DeviceConnectionInformation>();
         
 	this.context = context;
 	//get the layout inflater
@@ -67,8 +68,12 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-	// TODO Auto-generated method stub
-	return devicesItems.get(position);
+	Iterator<DeviceConnectionInformation> iter = devicesItems.iterator();
+	DeviceConnectionInformation item = iter.next();
+	for(int ii = 1; ii <= position; ii++){
+	    item = iter.next();
+	}
+	return item;
     }
 
     @Override
@@ -85,7 +90,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
         }
 
         //get the string item from the position "position" from array list to put it on the TextView
-        final DeviceConnectionInformation  info = devicesItems.get(position);
+        final DeviceConnectionInformation  info = (DeviceConnectionInformation) getItem(position);
         if (info != null) {
 
             TextView itemName = (TextView) convertView.findViewById(R.id.device_name_text_view);
