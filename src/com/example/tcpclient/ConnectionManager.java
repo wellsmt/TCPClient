@@ -1,7 +1,6 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
-=======
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
