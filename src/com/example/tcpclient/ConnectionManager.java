@@ -1,6 +1,7 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+=======
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import com.lp.io.MessageProducer;
 import com.lp.io.SocketConnector;
 import com.lp.io.UdpBroadcast;
 /**
- * Singleton connection manager class. Managers connections and their
+ * Singleton connection manager class. Manages connections and their
  *  data interpreters. A singleton instance is used so that connections
  *  persist between views. This Singleton uses the singleton enum pattern.
  * @author marc
