@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TCPClient</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_chart">Sensor Data Chart</string>
+    <string name="tableColumnHeadingTime">Time</string>
+    <string name="tableColumnHeadingChannel0">Channel 0</string>
+    <string name="tableColumnHeadingChannel1">Channel 1</string>
+    <string name="tableColumnHeadingChannel2">Channel 2</string>
+    <string name="tableColumnHeadingChannel3">Channel 3</string>
+</resources>

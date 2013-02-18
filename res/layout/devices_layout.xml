@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/ipLabel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/ip_address2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1.75"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/portLabel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Port"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/port2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Button
+            android:id="@+id/connect_button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:onClick="connectClickHandler"
+            android:text="Connect"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+    
+    <ListView
+        android:id="@+id/device_list"
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="vertical"              
+        android:transcriptMode="alwaysScroll"
+        android:cacheColorHint="#00000000"
+        android:listSelector="@android:color/transparent" />
+
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/close_all_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:onClick="closeAllClickHandler"
+            android:text="Close All"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+                <Button
+            android:id="@+id/refresh_devices_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:onClick="refreshClickHandler"
+            android:text="Refresh"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+
+</LinearLayout>
