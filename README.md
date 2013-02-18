@@ -1,4 +1,0 @@
-TCPClient
-=========
-
-Android TCP Client
