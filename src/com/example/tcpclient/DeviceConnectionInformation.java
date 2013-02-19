@@ -12,6 +12,7 @@ public class DeviceConnectionInformation {
     private String host;
     private int port;
     private String macAddress;
+    private String name;
     
     /**
      * Constructor. 
@@ -19,11 +20,12 @@ public class DeviceConnectionInformation {
      * @param port The devices port (i.e 9760).
      * @param macAddress
      */
-    public DeviceConnectionInformation(String host, int port, String macAddress) {
+    public DeviceConnectionInformation(String host, int port, String macAddress, String name) {
 	super();
 	this.host = host;
 	this.port = port;
 	this.macAddress = macAddress;
+	this.setName(name);
     }
     
     @Override
@@ -82,6 +84,14 @@ public class DeviceConnectionInformation {
     }
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
+    }
+
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
     }
 
 }

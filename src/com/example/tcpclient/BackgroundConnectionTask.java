@@ -85,6 +85,8 @@ public class BackgroundConnectionTask extends
 	    	    return "Failed to connect.";
 	    	case Closed:
 	    	    return "Connection closed.";
+	    	case ClosedByPeer:
+	    	    return "Connection was lost or closed by peer.";
 	    	default:
 	    	    return "";
 	    }
