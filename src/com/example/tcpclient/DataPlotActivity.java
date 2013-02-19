@@ -18,7 +18,7 @@ import android.os.Bundle;
  * @author marc
  *
  */
-public class DataPlotActivity extends Activity {
+public class DataPlotActivity extends AppMenuActivity {
     private XYPlot plot;
     private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
     private PlotUpdater messageConsumer;
