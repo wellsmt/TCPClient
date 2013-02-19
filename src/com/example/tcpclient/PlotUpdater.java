@@ -45,9 +45,10 @@ public class PlotUpdater implements MessageConsumer, Runnable {
 	// will create the SimpleDeviceMessage type.
 	SimpleDeviceMessage deviceMsg = (SimpleDeviceMessage) msg;
 	int channel = deviceMsg.getChannel();
-	if (channel < series.length) {
-	    series[channel].addLast(deviceMsg.getDeviceTimestamp(),
-		    deviceMsg.getValue());
+	if (channel < series.length) {	    	    
+	    // TODO: refactor to scale data with functional input
+	    float scale =  ((DataPlotActivity)activity).getScale(channel);	    	
+	    series[channel].addLast(deviceMsg.getDeviceTimestamp(), deviceMsg.getValue()*scale);
 	} else {
 	    Log.e("DATA SERIES",
 		    String.format(

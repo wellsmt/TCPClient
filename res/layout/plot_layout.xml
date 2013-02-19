@@ -1,15 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
      android:orientation="vertical" >
-        <com.androidplot.xy.XYPlot
-        android:id="@+id/chart"
+<com.androidplot.xy.XYPlot
+        	android:id="@+id/chart"
+        	android:layout_width="match_parent"
+        	android:layout_height="fill_parent"
+        	android:layout_marginLeft="0dp"
+        	android:layout_marginRight="0dp"
+        	android:layout_marginTop="0dp"
+        	title="Data Chart" />
+    <SlidingDrawer
+        android:id="@+id/slidingDrawer1"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
-        title="Data Chart" />
+        android:layout_height="match_parent"
+        android:content="@+id/content"
+        android:handle="@+id/handle" 
+        android:orientation="horizontal">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/handle"
+            android:layout_width="30dp"
+            android:layout_height="100dp"
+            android:text="@string/handleLbl" />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+<!-- TODO: Make dynamic based on available channels with an Adapter-->
+            <TableLayout android:layout_width="fill_parent"
+        		android:layout_height="wrap_content"
+        		android:orientation="vertical" >
+		        <TableRow >
+		        	<TextView android:text="Channel 0"
+		        	    	  android:textColor="#FFFFFF"
+		        	    	  android:layout_weight="1.5"/>
+        	    	<EditText android:id="@+id/channel0_scale"
+        	    	    	  android:layout_weight="9"/>
+        	    	<ToggleButton android:layout_weight="0.5"
+        	    	    		  android:id="@+id/channel0_toggle"/>
+            	</TableRow>        
+            	<TableRow >
+		        	<TextView android:text="Channel 1"
+		        	    	  android:textColor="#FFFFFF"
+		        	    	  android:layout_weight="1.5"/>
+        	    	<EditText android:id="@+id/channel1_scale"
+        	    	    	  android:layout_weight="9"/>
+        	    	<ToggleButton android:layout_weight="0.5"
+        	    	    		  android:id="@+id/channel1_toggle"/>
+            	</TableRow>
+            	<TableRow >
+		        <TextView android:text="Channel 2"
+		        	    	  android:textColor="#FFFFFF"
+		        	    	  android:layout_weight="1.5"/>
+        	    	<EditText android:id="@+id/channel2_scale"
+        	    	    	  android:layout_weight="9"/>
+        	    	<ToggleButton android:layout_weight="0.5"
+        	    	    		  android:id="@+id/channel2_toggle"/>
+            	</TableRow>
+            </TableLayout>
+                                
+        </LinearLayout>
+    </SlidingDrawer>
+                
+</FrameLayout>

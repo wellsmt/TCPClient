@@ -3,37 +3,65 @@ package com.example.tcpclient;
 
 import java.text.DecimalFormat;
 
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.ToggleButton;
+
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYStepMode;
 
 /**
  * An activity for all of the charting.
  * @author marc
  *
  */
-public class DataPlotActivity extends Activity {
+public class DataPlotActivity extends Activity{
     private XYPlot plot;
     private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
-    private PlotUpdater messageConsumer;
+    private PlotUpdater messageConsumer;    
+    // TODO: Make generic 
+    private EditText channel0Scale;
+    private ToggleButton channel0Toggle;
+    private EditText channel1Scale;
+    private ToggleButton channel1Toggle;
+    private EditText channel2Scale;
+    private ToggleButton channel2Toggle;
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.plot_layout);
-        onCreatePlot();
-        
+        onCreatePlot();        
+        channel0Scale = (EditText)findViewById(R.id.channel0_scale);
+        channel0Toggle = (ToggleButton)findViewById(R.id.channel0_toggle);
+        channel1Scale = (EditText)findViewById(R.id.channel1_scale);
+        channel1Toggle = (ToggleButton)findViewById(R.id.channel1_toggle);
+        channel2Scale = (EditText)findViewById(R.id.channel2_scale);
+        channel2Toggle = (ToggleButton)findViewById(R.id.channel2_toggle);
+             
         // Create and register the device message consumer.
         messageConsumer = new PlotUpdater(dataSeries, this,plot);
         ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(messageConsumer);
+    }        
+    
+    public float getScale(int channel)
+    {
+	float val = 1.00f;
+	switch(channel){
+		case 0: if(channel0Scale.getText().toString().length() != 0 && channel0Toggle.isChecked()) val = Float.valueOf( channel0Scale.getText().toString() );break;
+		case 1: if(channel1Scale.getText().toString().length() != 0 && channel1Toggle.isChecked()) val = Float.valueOf( channel1Scale.getText().toString() );break;
+		case 2: if(channel2Scale.getText().toString().length() != 0 && channel2Toggle.isChecked()) val = Float.valueOf( channel2Scale.getText().toString() );break;
+		default: break;
+	}
+	
+	return val;
     }
     
-    @SuppressWarnings("deprecation")
+     @SuppressWarnings("deprecation")
 	protected void onCreatePlot(){
         // get handles to our View defined in layout.xml:
         plot = (XYPlot) findViewById(R.id.chart);

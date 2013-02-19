@@ -13,7 +13,7 @@
             android:id="@+id/ipLabel2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="IP"
+            android:text="@string/ipLabelText"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
@@ -21,13 +21,14 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1.75"
+            android:inputType="text"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/portLabel2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Port"
+            android:text="@string/portLabelText"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
@@ -44,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:onClick="connectClickHandler"
-            android:text="Connect"
+            android:text="@string/connectButtonString"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
@@ -70,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:onClick="closeAllClickHandler"
-            android:text="Close All"
+            android:text="@string/closeButtonString"
             android:textAppearance="?android:attr/textAppearanceSmall" />
                 <Button
             android:id="@+id/refresh_devices_button"
@@ -78,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:onClick="refreshClickHandler"
-            android:text="Refresh"
+            android:text="@string/refreshButtonString"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 

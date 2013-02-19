@@ -8,4 +8,10 @@
     <string name="tableColumnHeadingChannel1">Channel 1</string>
     <string name="tableColumnHeadingChannel2">Channel 2</string>
     <string name="tableColumnHeadingChannel3">Channel 3</string>
+    <string name="connectButtonString">Connect</string>
+    <string name="ipLabelText">IP</string>
+    <string name="portLabelText">Port</string>
+    <string name="refreshButtonString">Refresh</string>
+    <string name="closeButtonString">Close All</string>
+    <string name="handleLbl">scale</string>
 </resources>

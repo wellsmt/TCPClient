@@ -41,12 +41,12 @@ public class AndroidTabLayoutActivity extends TabActivity {
         TabSpec plottab = tabHost.newTabSpec("Charts");
         plottab.setIndicator("Charts");//TODO: Add an icon
         Intent plotIntent = new Intent(this, DataPlotActivity.class);
-        plottab.setContent(plotIntent);
- 
+        plottab.setContent(plotIntent);       
+        
         // Adding all TabSpec to TabHost
         tabHost.addTab(deviceConnections); // Adding deviceConnections tab
         tabHost.addTab(mainspec); // Adding main tab
-        tabHost.addTab(plottab); // Adding plot tab
+        tabHost.addTab(plottab); // Adding plot tab        
         
         orientFix.setOnClickListener(new View.OnClickListener() {
             
