@@ -98,7 +98,12 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	// get the string item from the position "position" from array list to
 	// put it on the TextView
 	final DeviceConnectionInformation info = (DeviceConnectionInformation) getItem(position);
-	if (info != null) {	    
+	if (info != null) {
+	    TextView itemDeviceName = (TextView) convertView
+		    .findViewById(R.id.device_name_text_view);
+	    if(itemDeviceName != null){
+		itemDeviceName.setText(info.getName());
+	    }
 	    TextView itemHostName = (TextView) convertView
 		    .findViewById(R.id.device_host_name_text_view);
 	    if (itemHostName != null) {

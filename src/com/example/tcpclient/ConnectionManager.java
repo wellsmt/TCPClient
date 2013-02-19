@@ -1,8 +1,11 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +26,7 @@ import com.lp.io.UdpBroadcast;
  * @author marc
  *
  */
-public enum ConnectionManager {
+public enum ConnectionManager implements PropertyChangeListener {
     /** The singleton instance of the ConnectionManager */
     INSTANCE;
     private static final String TAG = "CONNECTION MANAGER";
@@ -55,11 +58,13 @@ public enum ConnectionManager {
 	// Attempt connection.
 	try{
 	    if(connection !=null && connection.isConnected()){
+		connection.removeChangeListener(this);
 		connection.close();
 	    }
 	    
 	    Log.i(TAG, String.format("Creating connection to %s:%d", host,port));
 	    connection = new SocketConnector(host, port, dataInterpreter);
+	    connection.addChangeListener(this);
 	    return connection;
 	}
 	catch(final Exception err){
@@ -68,6 +73,8 @@ public enum ConnectionManager {
 	}
 	return null;
     }
+    
+    
     
     /**
      * Returns true if the application is connected to the device 
@@ -153,5 +160,31 @@ public enum ConnectionManager {
 	}
 	
 	
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+	notifyListeners("connection",null, connection);
+    }
+    
+    private ArrayList<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
+    /**
+     * Register a change listener for receiving state change updates.
+     * @param listener
+     */
+    public void addChangeListener(PropertyChangeListener listener){
+       listeners.add(listener);
+    }
+    /**
+     * Removes a previously registered listener.
+     * @param listener
+     */
+    public void removeChangeListener(PropertyChangeListener listener){
+       listeners.remove(listener);
+    }
+    protected void notifyListeners(String property, Object oldValue, Object newValue){
+       for(PropertyChangeListener listener: listeners){
+          listener.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+       }
     }
 }

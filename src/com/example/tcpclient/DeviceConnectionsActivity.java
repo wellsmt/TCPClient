@@ -1,6 +1,10 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+import static com.example.tcpclient.ApplicationUtilities.toast;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,14 +15,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import static com.example.tcpclient.ApplicationUtilities.toast;
 import com.lp.io.DeviceBroadcastMessage;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
@@ -30,8 +31,10 @@ import com.lp.io.UdpBroadcast;
  * @author marc
  * 
  */
-public class DeviceConnectionsActivity extends Activity {
+public class DeviceConnectionsActivity extends AppMenuActivity implements PropertyChangeListener {
 
+    private final static String TAG = "DEVICE_CONNECTIONS_ACTIVITY";
+    
     private EditText ipAddressInput;
     private EditText portInput;
     private Button connect;
@@ -62,11 +65,27 @@ public class DeviceConnectionsActivity extends Activity {
 	send = new BackgroundSend();
 	send.execute(HELLO);
     }
+    
+    @Override
+    public void onResume(){
+	super.onResume();
+	ConnectionManager.INSTANCE.addChangeListener(this);
+    }
+    
+    @Override
+    public void onPause(){
+	super.onPause();
+	ConnectionManager.INSTANCE.removeChangeListener(this);
+    }
 
+    /**
+     * Handler for the connect button.
+     * @param view
+     */
     public void connectClickHandler(View view) {
 	listAdapter.add(new DeviceConnectionInformation(ipAddressInput
 		.getText().toString(), Integer.valueOf(portInput.getText()
-		.toString()), "????"));
+		.toString()), "????", "New Device"));
 	// Attempt connection.
 	connectionTask = new BackgroundConnectionTask(context);
 	connectionTask.setHost(ipAddressInput.getText().toString());
@@ -94,7 +113,13 @@ public class DeviceConnectionsActivity extends Activity {
 	send = new BackgroundSend();
 	send.execute(HELLO);
     }
-
+    
+    /**
+     * Async Send task for sending out the UDP broadcasts. Note that on certian
+     *  andriod devices networks calls must be made in a background thread.
+     * @author marc
+     *
+     */
     public class BackgroundSend extends AsyncTask<String, String, String> {
 	private static final String TAG = "BACKGROUND_SEND_TASK";
 
@@ -138,7 +163,7 @@ public class DeviceConnectionsActivity extends Activity {
 	@Override
 	public void onMessage(Message message) {
 	    DeviceBroadcastMessage msg = (DeviceBroadcastMessage) message;
-	    queue.add(new DeviceConnectionInformation(msg.getHost(),msg.getTcpPort(),msg.getMacAddress()));
+	    queue.add(new DeviceConnectionInformation(msg.getHost(),msg.getTcpPort(),msg.getMacAddress(), msg.getDeviceName()));
 	    view.runOnUiThread(this);
 	}
 
@@ -147,5 +172,16 @@ public class DeviceConnectionsActivity extends Activity {
 	   listAdapter.addAll(queue);
 	   queue.clear();
 	}
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+	runOnUiThread(new Runnable() {
+	    
+	    @Override
+	    public void run() {
+		listAdapter.notifyDataSetChanged();
+	    }
+	});
     }
 }
