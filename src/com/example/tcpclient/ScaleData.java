@@ -1,35 +1,59 @@
 package com.example.tcpclient;
 
 import android.app.Activity;
-import android.widget.EditText;
 import android.widget.ToggleButton;
+
+import com.google.calculator.calc.CalculatorInputTextView;
+import com.google.calculator.calc.ComputationResult;
 
 public class ScaleData {
     // TODO: Make generic 
-    private EditText channel0Scale;
+    private CalculatorInputTextView channel0Scale;
     private ToggleButton channel0Toggle;
-    private EditText channel1Scale;
+    
+    private CalculatorInputTextView channel1Scale;
     private ToggleButton channel1Toggle;
-    private EditText channel2Scale;
+    
+    private CalculatorInputTextView channel2Scale;
     private ToggleButton channel2Toggle;
     
-    public ScaleData(Activity activity)
-    {
-	channel0Scale = (EditText)activity.findViewById(R.id.channel0_scale);
+    private String wildcard="$data";    
+    
+    public ScaleData(String channeldata, Activity activity)
+    {		
+	wildcard = channeldata;
+	channel0Scale = (CalculatorInputTextView)activity.findViewById(R.id.channel0_scale);
 	channel0Toggle = (ToggleButton)activity.findViewById(R.id.channel0_toggle);
-	channel1Scale = (EditText)activity.findViewById(R.id.channel1_scale);
+	
+	channel1Scale = (CalculatorInputTextView)activity.findViewById(R.id.channel1_scale);
 	channel1Toggle = (ToggleButton)activity.findViewById(R.id.channel1_toggle);
-	channel2Scale = (EditText)activity.findViewById(R.id.channel2_scale);
+	
+	channel2Scale = (CalculatorInputTextView)activity.findViewById(R.id.channel2_scale);
 	channel2Toggle = (ToggleButton)activity.findViewById(R.id.channel2_toggle);
     }
     
-    public float getScale(int channel)
+    public float scaleChannelData(int channel, float data)
     {
-	float val = 1.00f;
+	float val = data;
 	switch(channel){
-		case 0: if(channel0Scale.getText().toString().length() != 0 && channel0Toggle.isChecked()) val = Float.valueOf( channel0Scale.getText().toString() );break;
-		case 1: if(channel1Scale.getText().toString().length() != 0 && channel1Toggle.isChecked()) val = Float.valueOf( channel1Scale.getText().toString() );break;
-		case 2: if(channel2Scale.getText().toString().length() != 0 && channel2Toggle.isChecked()) val = Float.valueOf( channel2Scale.getText().toString() );break;
+		case 0: {		    
+		    if(channel0Toggle.isChecked()){			
+			ComputationResult result = channel0Scale.performComputation(wildcard,data);			
+			val = Float.valueOf( result.toString() );			
+		    }			
+		}break;
+		case 1: {
+		    if(channel1Toggle.isChecked()){			
+			ComputationResult result = channel1Scale.performComputation(wildcard,data);			
+			val = Float.valueOf( result.toString() );	
+		    }
+		}break;
+		case 2: {
+		    if(channel2Toggle.isChecked()){			
+			ComputationResult result = channel2Scale.performComputation(wildcard,data);			
+			val = Float.valueOf( result.toString() );	
+		    }
+		}break;
 		default: break;
 	}
 	

@@ -23,8 +23,7 @@ public class PlotUpdater implements MessageConsumer, Runnable {
     /** The activity that the plot is in. */
     private Activity activity;
     /** The XYPloy used to plot data. */
-    XYPlot dataPlot;
-
+    XYPlot dataPlot;    
     /**
      * Constructor. Takes in necessary dependencies.
      * 
@@ -45,10 +44,11 @@ public class PlotUpdater implements MessageConsumer, Runnable {
 	// will create the SimpleDeviceMessage type.
 	SimpleDeviceMessage deviceMsg = (SimpleDeviceMessage) msg;
 	int channel = deviceMsg.getChannel();
+	
 	if (channel < series.length) {	    	    
-	    // TODO: refactor to scale data with functional input
-	    float scale =  ((DataPlotActivity)activity).getScaleData(channel);	    	
-	    series[channel].addLast(deviceMsg.getDeviceTimestamp(), deviceMsg.getValue()*scale);
+	    // TODO: refactor to scale data with functional input	    
+	    float scaledValue =  ((DataPlotActivity)activity).scaleChannelData(channel, (float)deviceMsg.getValue());	    	
+	    series[channel].addLast(deviceMsg.getDeviceTimestamp(), scaledValue);	    
 	} else {
 	    Log.e("DATA SERIES",
 		    String.format(

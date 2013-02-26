@@ -24,20 +24,25 @@ public class DataPlotActivity extends AppMenuActivity {
     private XYPlot plot;
     private SensorDataSeries[] dataSeries = new SensorDataSeries[3];
     private PlotUpdater messageConsumer;
+    private static String CHANNEL_DATA_SYMBOL = "$data";
     private ScaleData scaleData;
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.plot_layout);
         onCreatePlot();                
-             
+
+        // create the
+        scaleData = new ScaleData(CHANNEL_DATA_SYMBOL,this);
+        
         // Create and register the device message consumer.
         messageConsumer = new PlotUpdater(dataSeries, this,plot);
-        scaleData = new ScaleData(this);
+
         ConnectionManager.INSTANCE.getConnectionMessageProducer().registerObserver(messageConsumer);
-    }             
-    public float getScaleData(int channel){
-	return scaleData.getScale(channel);
+    }    
+    
+    public float scaleChannelData(int channel, float data){
+	return scaleData.scaleChannelData(channel, data);
     }
     
      @SuppressWarnings("deprecation")
