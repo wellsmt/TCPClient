@@ -12,6 +12,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.tcpclient.experimental.SchematicView;
 import com.lp.io.DeviceBroadcastMessage;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;

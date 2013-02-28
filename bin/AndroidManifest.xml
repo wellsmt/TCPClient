@@ -38,6 +38,12 @@
  
         <!--  Data Plot Activity -->
         <activity android:name=".DataPlotActivity" />
+        
+        <!--  Schematic View Activity -->
+        <activity android:name=".SchematicViewActivity" />
+        
+        <!--  Schematic View Activity -->
+        <activity android:name=".ComponentOptionsActivity" />
     </application>
 
 </manifest>

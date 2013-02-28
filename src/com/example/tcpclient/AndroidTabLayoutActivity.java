@@ -1,6 +1,7 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient;
 
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -41,7 +42,14 @@ public class AndroidTabLayoutActivity extends TabActivity {
         Intent plotIntent = new Intent(this, DataPlotActivity.class);
         plottab.setContent(plotIntent);       
         
+        // Tab Label --------
+        TabSpec schematics = tabHost.newTabSpec("Schematics");
+        schematics.setIndicator("Schematics");//TODO: Add an icon
+        Intent schematicConnectionsIntent = new Intent(this, SchematicViewActivity.class);
+        schematics.setContent(schematicConnectionsIntent);
+        
         // Adding all TabSpec to TabHost
+        tabHost.addTab(schematics);
         tabHost.addTab(deviceConnections); // Adding deviceConnections tab
         tabHost.addTab(mainspec); // Adding main tab
         tabHost.addTab(plottab); // Adding plot tab        
