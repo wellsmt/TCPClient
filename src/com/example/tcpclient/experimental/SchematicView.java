@@ -1,14 +1,21 @@
 // Copyright 2013 Marc Bernardini.
 package com.example.tcpclient.experimental;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.PointF;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -22,6 +29,12 @@ public class SchematicView extends View {
     private static final String TAG = "SCHEMATIC_VIEW";
     private static final int INVALID_POINTER_ID = -1;
     
+    private float MIN_X_COORDINATE = -580f;
+    private float MAX_X_COORDINATE = 1020f;
+    private int displayWidth = 0;
+    private int displayHeight = 0;
+    
+    
     private List<Drawable> drawables = new ArrayList<Drawable>();
     private Set<Connection> connections = new HashSet<Connection>();
     private DragManager dragManager = new DragManager();
@@ -32,17 +45,35 @@ public class SchematicView extends View {
     private float xTranslation = 0.f;
     private float yTranslation = 0.f;
     
+    
+    
     GestureDetector gestureDetector;
     LayoutInflater inflater;
     
+    SchematicSaver saver;
+    
     public SchematicView(Context context) {
 	super(context);
+	initialize(context);
+    }
+    public SchematicView(Context context, AttributeSet attr){
+	super(context, attr);
+	initialize(context);
+    }
+    public SchematicView(Context context, AttributeSet attr, int defStyle){
+	super(context, attr, defStyle);
+	initialize(context);
+    }
+    
+    protected void initialize(Context context){
+	saver = new SchematicSaver(context);
 	
 	inflater = (LayoutInflater)context.getSystemService
 		      (Context.LAYOUT_INFLATER_SERVICE);
 	
 	setLongClickable(true);
 	mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+	
 	
 	DeviceView device1 = new DeviceView(dragManager);
 	device1.centerOn(50, 150);
@@ -76,7 +107,36 @@ public class SchematicView extends View {
 	        getContext().startActivity(i);
 	    }
 	});
-    }  
+    }
+    
+    public void save(){
+	JSONArray components = new JSONArray();
+	for(Drawable drw:drawables){
+	    JSONObject obj = new JSONObject();
+	    try {
+		obj.put("componentName", "test");
+		PointF coords = drw.getCenterLocation();
+		obj.put("xCenter", coords.x);
+		obj.put("yCenter", coords.y);
+		components.put(obj);
+	    } catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    
+	}
+	JSONObject schematic= new JSONObject();
+	try {
+	    schematic.put("components", components);
+
+	    saver.save(schematic);
+	} catch (JSONException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IOException err) {
+	    Log.e(TAG, "Error writing out schematic.", err);
+	}
+    }
     
     @Override
     public void onDraw(Canvas canvas) {
@@ -85,14 +145,36 @@ public class SchematicView extends View {
 	canvas.scale(mScaleFactor, mScaleFactor);
 	canvas.translate(xTranslation, yTranslation);
 	Log.i(TAG,"onDraw");
-	for(Connection con:connections){
-	    con.draw(canvas);
+	
+	//TODO: This can probably be made much more efficient.
+	Canvas bg = canvas;
+	for(int ii = -50; ii != 51; ii++){
+	    int minorOffset = 20*ii;
+	    if( ii%10 == 0){
+		int majorOffset = 20*ii;
+		bg.drawLine(-1000, majorOffset, 1000, majorOffset, SchematicTheme.BACKGROUND_MAJOR_LINES_PAINT);
+		bg.drawLine(majorOffset, -1000, majorOffset,1000, SchematicTheme.BACKGROUND_MAJOR_LINES_PAINT);
+	    }else{
+		bg.drawLine(-1000, minorOffset, 1000, minorOffset, SchematicTheme.BACKGROUND_MINOR_LINES_PAINT);
+	    	bg.drawLine(minorOffset, -1000, minorOffset,1000, SchematicTheme.BACKGROUND_MINOR_LINES_PAINT);
+	    }
 	}
 	
 	for(Drawable obj:drawables){
 	    obj.draw(canvas);
 	}
+	
+	for(Connection con:connections){
+	    con.draw(canvas);
+	}
+	
 	canvas.restore();
+    }
+    
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	displayWidth = widthMeasureSpec;
+	displayHeight = heightMeasureSpec;
     }
 
     private float mLastTouchX;
@@ -139,13 +221,18 @@ public class SchematicView extends View {
 	if(objectBeingDragged != null){
 	    objectBeingDragged.setHighlight(false);
 	    objectBeingDragged.setDragState(false);
+	    float translatedX = (x - xTranslation)/mScaleFactor;
+	    float translatedY = (y - yTranslation)/mScaleFactor;
 	    for(Drawable dropTarget:draggables){
-		if(objectBeingDragged != dropTarget && dropTarget.isWithinBoundingBox((x - xTranslation)/mScaleFactor,(y - yTranslation)/mScaleFactor)){
+		if(objectBeingDragged != dropTarget && dropTarget.isWithinBoundingBox(translatedX,translatedY)){
 		    if(dropTarget.dropTarget(objectBeingDragged)){
 			connections.add(new Connection(objectBeingDragged, dropTarget));
 		    }
 		}
 	    }
+	    int xMultiplier = (int)translatedX/20;
+	    int yMultiplier = (int)translatedY/20;
+	    objectBeingDragged.centerOn(20f*xMultiplier, 20f*yMultiplier);
 	    invalidate();
 	}
 	objectBeingDragged = null;
@@ -198,6 +285,14 @@ public class SchematicView extends View {
 	    }
 	    else{
 		xTranslation += dx;
+		Log.i(TAG, String.format("Translation [%f,%f]",xTranslation,yTranslation));
+		if(xTranslation < MIN_X_COORDINATE){
+		    xTranslation = MIN_X_COORDINATE;
+		}
+		if(xTranslation > MAX_X_COORDINATE) {
+		    xTranslation = MAX_X_COORDINATE;
+		}
+		
 		yTranslation += dy;
 		invalidate();
 	    }

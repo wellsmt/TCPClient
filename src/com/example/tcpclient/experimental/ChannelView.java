@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 
 class ChannelView extends SimpleRectangularDrawable {
 	float originalX,originalY;
@@ -15,9 +16,11 @@ class ChannelView extends SimpleRectangularDrawable {
 	Paint fillPaint = new Paint();
 	Paint textPaint = new Paint();
 	ChannelView(final String name){
-	    super(0,0,40,30);
-	    fillPaint.setColor(Color.GREEN);
-	    textPaint.setColor(Color.WHITE);
+	    super(0,0,50,50);
+	    fillPaint.setColor(Color.argb(255, 255, 255, 99));
+	    
+	    textPaint.setColor(Color.argb(255, 50, 50, 50));
+	    textPaint.setAntiAlias(true);
 	    this.name = name;
 	}
 	
@@ -30,7 +33,8 @@ class ChannelView extends SimpleRectangularDrawable {
 
 	@Override
 	public void draw(Canvas canvas) {
-	    canvas.drawRect(x, y, x + width, y + height, fillPaint);
+	    //canvas.drawRect(x, y, x + width, y + height, fillPaint);
+	    canvas.drawRoundRect(new RectF(x, y, x + width, y + height), 5, 5, fillPaint);
 	    textPaint.setStrokeWidth(2);
 	    textPaint.setTextSize(14);
 	    canvas.drawText(name, x+10, y+height-3, textPaint);

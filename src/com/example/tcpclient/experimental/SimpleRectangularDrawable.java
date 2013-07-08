@@ -103,4 +103,9 @@ public class SimpleRectangularDrawable implements Drawable {
 	canvas.drawText(text, textX, y-5, paint);
     }
 
+    @Override
+    public PointF getCenterLocation(){
+	return new PointF(x + width/2, y + height/2);
+    }
+
 }

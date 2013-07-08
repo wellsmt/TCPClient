@@ -31,7 +31,7 @@ public class TimeSeriesChartView extends SimpleRectangularDrawable {
 	
 	canvas.drawRect(x, y, x+width, y+height,SchematicTheme.ICONIZED_COMPONENT_PAINT);
 	canvas.drawBitmap(bitmap, x, y, SchematicTheme.ICONIZED_COMPONENT_PAINT);
-	String label = "Time Series";
+	String label = "Time Series View";
 	
 	drawCenteredLabel(label, canvas, SchematicTheme.COMPONENT_LABEL_PAINT);
 

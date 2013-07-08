@@ -68,7 +68,10 @@ class DeviceView extends SimpleRectangularDrawable {
 	    drawCenteredLabel("DAQ 1234", canvas, SchematicTheme.COMPONENT_LABEL_PAINT);
 	    
 	    float verticalCenter = x+width;
-	    float verticalStart = 20 + y;
+	    
+	    final float VERTICAL_GAP = 30;
+	    final float STARTING_CENTER_OFFSET = 30;
+	    float verticalStart = STARTING_CENTER_OFFSET + y;
 	    for(ChannelView cv:channels){
 		if(!cv.isBeingDragged()){
 		  cv.centerOn(verticalCenter, verticalStart);
@@ -78,7 +81,7 @@ class DeviceView extends SimpleRectangularDrawable {
 		  canvas.drawLine(verticalCenter, verticalStart, cv.x, cv.y - cv.height/2, strokePaint);
 		}
 		    
-		verticalStart += 30 + cv.height;
+		verticalStart += VERTICAL_GAP + cv.height;
 	    }
 	}
 

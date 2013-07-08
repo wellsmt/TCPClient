@@ -28,4 +28,6 @@ interface Drawable {
     public abstract PointF getOutGoingConnectionPoint();
 
     public abstract PointF getIncomingConnectionPoint();
+    
+    public abstract PointF getCenterLocation();
 }
