@@ -47,8 +47,11 @@ public class PlotUpdater implements MessageConsumer, Runnable {
 	int channel = deviceMsg.getChannel();
 	if (channel < series.length) {	    	    
 	    // TODO: refactor to scale data with functional input
-	    float scale =  ((DataPlotActivity)activity).getScaleData(channel);	    	
-	    series[channel].addLast(deviceMsg.getDeviceTimestamp(), deviceMsg.getValue()*scale);
+	    float scale =  ((DataPlotActivity)activity).getScaleData(channel);
+	    // Timestamp is the time the message was received on the phone. This could
+	    //  potentially be an issue if there is lots of variation in the time it takes
+	    //  for the data to get from the DAQ to the phone. 
+	    series[channel].addLast(deviceMsg.getTimestamp(), deviceMsg.getValue()*scale);
 	} else {
 	    Log.e("DATA SERIES",
 		    String.format(

@@ -59,7 +59,7 @@ public class LogFileWriter implements MessageConsumer {
 	    return;
 	}
 	try {
-	    buf.append(message.getData());
+	    buf.append(message.getTimestamp()+","+message.getData());
 	    buf.newLine();
 	    buf.flush();
 	} catch (IOException err) {
