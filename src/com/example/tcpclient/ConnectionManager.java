@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.net.DhcpInfo;
@@ -15,10 +17,14 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import com.lp.io.DataInterpreter;
-import com.lp.io.DeviceMessageInterpretor;
+import com.lp.io.DeviceMessageInterpreter;
 import com.lp.io.MessageProducer;
+import com.lp.io.ProtoBuffersDataFrameInterpretor;
 import com.lp.io.SocketConnector;
 import com.lp.io.UdpBroadcast;
+import com.tacuna.common.devices.scpi.Command;
+import com.tacuna.common.devices.scpi.ScheduledCommand;
+import com.tacuna.common.devices.scpi.ScpiMessageExchange;
 /**
  * Singleton connection manager class. Manages connections and their
  *  data interpreters. A singleton instance is used so that connections
@@ -45,8 +51,11 @@ public enum ConnectionManager implements PropertyChangeListener {
     private Map<String,SocketConnector> connections = new HashMap<String,SocketConnector>();
     private Map<String,DataInterpreter> dataStream = new HashMap<String,DataInterpreter>();
     private SocketConnector connection;
-    private DeviceMessageInterpretor dataInterpreter = new DeviceMessageInterpretor();
+    private DeviceMessageInterpreter dataInterpreter = new DeviceMessageInterpreter();
+    private ScpiMessageExchange exchange = new ScpiMessageExchange(null, dataInterpreter);
+    //private DataInterpreter dataInterpreter = new ProtoBuffersDataFrameInterpretor();
     
+    //private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     /**
      * Socket connection factory method. Currently, the APP can only have one open
      *  connection but that may change
@@ -65,6 +74,10 @@ public enum ConnectionManager implements PropertyChangeListener {
 	    Log.i(TAG, String.format("Creating connection to %s:%d", host,port));
 	    connection = new SocketConnector(host, port, dataInterpreter);
 	    connection.addChangeListener(this);
+	    
+	    exchange.setConnection(connection);
+	    //executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",1), exchange), 1, 1, TimeUnit.SECONDS);
+	    //executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",2), exchange), 1, 1, TimeUnit.SECONDS);
 	    return connection;
 	}
 	catch(final Exception err){
@@ -93,7 +106,7 @@ public enum ConnectionManager implements PropertyChangeListener {
     }
     
     public MessageProducer getConnectionMessageProducer(){
-	return dataInterpreter;
+	return exchange;
     }
     
     /**
@@ -118,11 +131,17 @@ public enum ConnectionManager implements PropertyChangeListener {
      * @throws IOException
      */
     protected InetAddress getBroadcastAddress(Context context) throws IOException {
-	
 	    WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+	    // Throw if no WifiManager available
+	    if(wifi == null){
+		throw new IOException("NULL WifiManager. You must be connected to a wifi network.");
+	    }
+	    
 	    DhcpInfo dhcp = wifi.getDhcpInfo();
-	    // handle null somehow
-
+	    //If the dhcp info is null, just return the default broadcast address.
+	    if(dhcp == null){
+		return InetAddress.getByName("255.255.255.255");
+	    }
 	    int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
 	    byte[] quads = new byte[4];
 	    for (int k = 0; k < 4; k++)
