@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.tcpclient.experimental.SchematicView;
 import com.lp.io.DeviceBroadcastMessage;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;

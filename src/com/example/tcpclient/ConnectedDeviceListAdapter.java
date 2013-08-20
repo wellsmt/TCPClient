@@ -3,18 +3,29 @@ package com.example.tcpclient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.nio.channels.AsynchronousCloseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.devices.scpi.Command;
+
+import android.app.ActionBar.LayoutParams;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -101,7 +112,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	if (info != null) {
 	    TextView itemDeviceName = (TextView) convertView
 		    .findViewById(R.id.device_name_text_view);
-	    if(itemDeviceName != null){
+	    if (itemDeviceName != null) {
 		itemDeviceName.setText(info.getName());
 	    }
 	    TextView itemHostName = (TextView) convertView
@@ -121,31 +132,11 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		    .findViewById(R.id.device_connection_toggle);
 	    boolean isEnabled = ConnectionManager.INSTANCE.isAppConnected(info);
 	    deviceConnectionToggle.setChecked(isEnabled);
-	    
-	    deviceConnectionToggle
-		    .setOnClickListener(new View.OnClickListener() {
-			private ToggleButton toggle = deviceConnectionToggle;
-			private DeviceConnectionInformation connectionInfo = info;
 
-			@Override
-			public void onClick(View v) {
-			    // Toggle Orientation Fix
-			    if (toggle.isChecked()) {
-				Log.i(TAG,
-					String.format(
-						"Starting background task to connect to %s:%d",
-						connectionInfo.getHost(),
-						connectionInfo.getPort()));
-				task = new BackgroundConnectionTask(context);
-				task.setHost(connectionInfo.getHost());
-				task.setPort(connectionInfo.getPort());
-				task.execute("");
-			    } else {
-				task.cancel(true);
-				ConnectionManager.INSTANCE.closeAll();
-			    }
-			}
-		    });
+	    deviceConnectionToggle.setOnClickListener(new ToggleConnection(
+		    info, deviceConnectionToggle));
+
+	    addInputChannels(convertView);
 	}
 
 	// this method must return the view corresponding to the data at the
@@ -153,25 +144,184 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	return convertView;
     }
     
-    public class ToggleConnection implements View.OnClickListener, PropertyChangeListener{
-	private DeviceConnectionInformation info;
-	
-	ToggleConnection(DeviceConnectionInformation info){
-	    this.info = info;
+    protected void addInputChannels(View convertView){
+	    int NUMBER_OF_AI_CHANNELS = 8;
+	    TableLayout table = (TableLayout)convertView.findViewById(R.id.channelTable);
+	    table.removeAllViews();
+	    for(int channel =1;channel <= NUMBER_OF_AI_CHANNELS;channel++){
+		TableRow tr = new TableRow(context);
+		tr.setId(channel+100);
+		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
+		
+		//Channel label:
+		TextView label = new TextView(context);
+		label.setId(channel+200);
+		label.setText("AI"+channel);
+		label.setPadding(5, 0, 5, 5);
+		//label.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		tr.addView(label);
+		
+		TextView measuredValue = new TextView(context);
+		measuredValue.setId(channel+300);
+		measuredValue.setText("+0.0000");
+		measuredValue.setTextSize(20);
+		measuredValue.setTextColor(Color.BLACK);
+		measuredValue.setPadding(10, 5, 5, 5);
+		//measuredValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		tr.addView(measuredValue);
+		
+		Button measureBtn = new Button(context);
+		measureBtn.setId(channel+400);
+		
+		//measureBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		measureBtn.setGravity(Gravity.CENTER_VERTICAL|Gravity.RIGHT);
+		measureBtn.setText("Measure");
+		measureBtn.setOnClickListener(new MeasureValue(measuredValue,
+		    new Command("MEASure:EXT:ADC?", channel)));
+		tr.addView(measureBtn);
+		
+		table.addView(tr);
+	    }
+	    
+	    int NUMBER_OF_DI_CHANNELS = 8;
+	    for(int channel =1;channel <= NUMBER_OF_DI_CHANNELS;channel++){
+		TableRow tr = new TableRow(context);
+		tr.setId(channel+500);
+		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
+		
+		//Channel label:
+		TextView label = new TextView(context);
+		label.setId(channel+600);
+		label.setText("DI"+channel);
+		label.setPadding(5, 0, 5, 5);
+		//label.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		tr.addView(label);
+		
+		TextView measuredValue = new TextView(context);
+		measuredValue.setId(channel+700);
+		measuredValue.setText("0");
+		measuredValue.setTextSize(20);
+		measuredValue.setTextColor(Color.BLACK);
+		measuredValue.setPadding(10, 5, 5, 5);
+		//measuredValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		tr.addView(measuredValue);
+		
+		Button measureBtn = new Button(context);
+		measureBtn.setId(channel+800);
+		
+		//measureBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
+		measureBtn.setGravity(Gravity.CENTER_VERTICAL|Gravity.RIGHT);
+		measureBtn.setText("Measure");
+		measureBtn.setOnClickListener(new MeasureValue(measuredValue,
+		    new Command("INPut:PORt:STATe?", channel)));
+		tr.addView(measureBtn);
+		
+		table.addView(tr);
+	    }
+    }
+
+    /**
+     * OnClick Listener used to handle button clicks that make
+     *  a SCPI command and set the result to a TextView.
+     * @author marc
+     *
+     */
+    protected class MeasureValue implements View.OnClickListener {
+
+	/**
+	 * Measure SCPI command extends the background SCPI command
+	 *  class and is used to update the view with the results from
+	 *  executing the SCPI command.
+	 * @author marc
+	 *
+	 */
+	protected class MeasureScpiCommand extends BackgroundScpiCommand {
+	    private TextView text;
+	    private View enableOnComplete;
+	    
+	    public MeasureScpiCommand(TextView text,View enableOnComplete) {
+		super();
+		this.text = text;
+		this.enableOnComplete = enableOnComplete;
+	    }
+
+	    @Override
+	    /**
+	     * Overriden to set the text of the TextView with the response from
+	     *   the SCPI command.
+	     */
+	    protected void onPostExecute(SimpleDeviceMessage result) {
+		super.onPostExecute(result);
+		text.setText(result.getData());
+	    }
+	}
+
+	public MeasureValue(TextView text, Command command) {
+	    super();
+	    this.text = text;
+	    this.command = command;
+	}
+
+	private TextView text;
+	private Command command;
+	MeasureScpiCommand async;
+
+	@Override
+	/**
+	 * The onClick method has been overridden to send
+	 *  a SCPI command to the device.
+	 * @param view
+	 */
+	public void onClick(View v) {
+	    if(isNotRunning()){
+		async = new MeasureScpiCommand(text,v);
+		async.execute(command);
+	    }
 	}
 	
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-	    // TODO Auto-generated method stub
-	    
+	protected Boolean isNotRunning(){
+	    return async == null || async.getStatus() != AsyncTask.Status.RUNNING;
+	}
+    }
+
+    public class ToggleConnection implements View.OnClickListener,
+	    PropertyChangeListener {
+	private ToggleButton toggle;
+	private DeviceConnectionInformation connectionInfo;
+
+	ToggleConnection(DeviceConnectionInformation info,
+		ToggleButton deviceConnectionToggle) {
+	    this.connectionInfo = info;
+	    this.toggle = deviceConnectionToggle;
 	}
 
 	@Override
-	public void onClick(View v) {
+	public void propertyChange(PropertyChangeEvent event) {
 	    // TODO Auto-generated method stub
-	    
+
 	}
-	
+
+	@Override
+	/**
+	 * The onClick method has been overridden to toggle
+	 * the connection on and off.
+	 * @param view
+	 */
+	public void onClick(View v) {
+	    if (toggle.isChecked()) {
+		Log.i(TAG, String.format(
+			"Starting background task to connect to %s:%d",
+			connectionInfo.getHost(), connectionInfo.getPort()));
+		task = new BackgroundConnectionTask(context);
+		task.setHost(connectionInfo.getHost());
+		task.setPort(connectionInfo.getPort());
+		task.execute("");
+	    } else {
+		task.cancel(true);
+		ConnectionManager.INSTANCE.closeAll();
+	    }
+	}
+
     }
 
 }

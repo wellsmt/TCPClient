@@ -40,16 +40,9 @@ public class AndroidTabLayoutActivity extends TabActivity {
         TabSpec plottab = tabHost.newTabSpec("Charts");
         plottab.setIndicator("Charts");//TODO: Add an icon
         Intent plotIntent = new Intent(this, DataPlotActivity.class);
-        plottab.setContent(plotIntent);       
-        
-        // Tab Label --------
-        TabSpec schematics = tabHost.newTabSpec("Schematics");
-        schematics.setIndicator("Schematics");//TODO: Add an icon
-        Intent schematicConnectionsIntent = new Intent(this, SchematicViewActivity.class);
-        schematics.setContent(schematicConnectionsIntent);
-        
+        plottab.setContent(plotIntent);
+
         // Adding all TabSpec to TabHost
-        tabHost.addTab(schematics);
         tabHost.addTab(deviceConnections); // Adding deviceConnections tab
         tabHost.addTab(mainspec); // Adding main tab
         tabHost.addTab(plottab); // Adding plot tab        

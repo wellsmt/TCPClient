@@ -55,7 +55,7 @@ public enum ConnectionManager implements PropertyChangeListener {
     private ScpiMessageExchange exchange = new ScpiMessageExchange(null, dataInterpreter);
     //private DataInterpreter dataInterpreter = new ProtoBuffersDataFrameInterpretor();
     
-    private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    //private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     /**
      * Socket connection factory method. Currently, the APP can only have one open
      *  connection but that may change
@@ -76,8 +76,8 @@ public enum ConnectionManager implements PropertyChangeListener {
 	    connection.addChangeListener(this);
 	    
 	    exchange.setConnection(connection);
-	    executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",1), exchange), 1, 1, TimeUnit.SECONDS);
-	    executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",2), exchange), 1, 1, TimeUnit.SECONDS);
+	    //executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",1), exchange), 1, 1, TimeUnit.SECONDS);
+	    //executor.scheduleWithFixedDelay(new ScheduledCommand(new Command("MEASure:EXT:ADC?",2), exchange), 1, 1, TimeUnit.SECONDS);
 	    return connection;
 	}
 	catch(final Exception err){
