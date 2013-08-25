@@ -20,3 +20,6 @@ local.properties
 .project
 # Eclipse andriod lint configuration file:
 lint.xml
+
+# VIM files
+*~

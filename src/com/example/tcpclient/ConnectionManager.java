@@ -8,8 +8,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.net.DhcpInfo;
@@ -19,11 +17,8 @@ import android.util.Log;
 import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpreter;
 import com.lp.io.MessageProducer;
-import com.lp.io.ProtoBuffersDataFrameInterpretor;
 import com.lp.io.SocketConnector;
 import com.lp.io.UdpBroadcast;
-import com.tacuna.common.devices.scpi.Command;
-import com.tacuna.common.devices.scpi.ScheduledCommand;
 import com.tacuna.common.devices.scpi.ScpiMessageExchange;
 /**
  * Singleton connection manager class. Manages connections and their
