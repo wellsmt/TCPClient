@@ -6,15 +6,12 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-import com.lp.io.DataInterpreter;
 import com.lp.io.DeviceMessageInterpreter;
 import com.lp.io.MessageProducer;
 import com.lp.io.SocketConnector;
@@ -41,10 +38,6 @@ public enum ConnectionManager implements PropertyChangeListener {
     public static final int RESPONSE_PORT = 30303;
     
     private UdpBroadcast broadcaster;
-    private UdpListenThread listenThread;
-    
-    private Map<String,SocketConnector> connections = new HashMap<String,SocketConnector>();
-    private Map<String,DataInterpreter> dataStream = new HashMap<String,DataInterpreter>();
     private SocketConnector connection;
     private DeviceMessageInterpreter dataInterpreter = new DeviceMessageInterpreter();
     private ScpiMessageExchange exchange = new ScpiMessageExchange(null, dataInterpreter);
@@ -114,7 +107,7 @@ public enum ConnectionManager implements PropertyChangeListener {
     public UdpBroadcast getBroadcaster(Context context) throws IOException{
 	if(broadcaster == null){
 	    broadcaster = new UdpBroadcast(RESPONSE_PORT,getBroadcastAddress(context));
-	    listenThread = new UdpListenThread(broadcaster);
+	    new UdpListenThread(broadcaster);
 	}
 	return broadcaster;
     }

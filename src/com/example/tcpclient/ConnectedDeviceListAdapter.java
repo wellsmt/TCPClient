@@ -3,16 +3,10 @@ package com.example.tcpclient;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.nio.channels.AsynchronousCloseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.lp.io.SimpleDeviceMessage;
-import com.tacuna.common.devices.scpi.Command;
-
-import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -23,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.devices.scpi.Command;
 
 /**
  * This is the list adapter used for updating the Devices List view.
@@ -237,12 +233,9 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	 */
 	protected class MeasureScpiCommand extends BackgroundScpiCommand {
 	    private TextView text;
-	    private View enableOnComplete;
-	    
 	    public MeasureScpiCommand(TextView text,View enableOnComplete) {
 		super();
 		this.text = text;
-		this.enableOnComplete = enableOnComplete;
 	    }
 
 	    @Override

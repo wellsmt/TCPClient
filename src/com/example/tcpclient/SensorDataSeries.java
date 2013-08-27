@@ -1,7 +1,5 @@
 package com.example.tcpclient;
 
-import android.location.Address;
-
 import com.androidplot.xy.SimpleXYSeries;
 /**
  * Sensor Data series used to capture dynamic sensor

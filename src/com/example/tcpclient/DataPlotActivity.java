@@ -3,12 +3,9 @@ package com.example.tcpclient;
 
 import java.text.DecimalFormat;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ToggleButton;
 
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;

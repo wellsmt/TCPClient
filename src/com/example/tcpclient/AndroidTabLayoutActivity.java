@@ -4,13 +4,9 @@ package com.example.tcpclient;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import android.widget.ToggleButton;
 
 public class AndroidTabLayoutActivity extends TabActivity {
     /** Called when the activity is first created. */

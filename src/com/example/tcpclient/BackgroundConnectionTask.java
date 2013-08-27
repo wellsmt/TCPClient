@@ -2,15 +2,15 @@
 package com.example.tcpclient;
 
 import static com.example.tcpclient.ApplicationUtilities.toast;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import com.lp.io.SocketConnector;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.lp.io.SocketConnector;
 
 /**
  * Background connection task. Attempts to make the connection and will notify

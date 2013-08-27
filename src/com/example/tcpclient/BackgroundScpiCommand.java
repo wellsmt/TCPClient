@@ -2,7 +2,6 @@
 package com.example.tcpclient;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
 
 import android.os.AsyncTask;
 import android.util.Log;
