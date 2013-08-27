@@ -148,7 +148,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    int NUMBER_OF_AI_CHANNELS = 8;
 	    TableLayout table = (TableLayout)convertView.findViewById(R.id.channelTable);
 	    table.removeAllViews();
-	    for(int channel =1;channel <= NUMBER_OF_AI_CHANNELS;channel++){
+	    for(int channel =0;channel < NUMBER_OF_AI_CHANNELS;channel++){
 		TableRow tr = new TableRow(context);
 		tr.setId(channel+100);
 		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
@@ -184,7 +184,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    }
 	    
 	    int NUMBER_OF_DI_CHANNELS = 8;
-	    for(int channel =1;channel <= NUMBER_OF_DI_CHANNELS;channel++){
+	    for(int channel =0;channel <= NUMBER_OF_DI_CHANNELS;channel++){
 		TableRow tr = new TableRow(context);
 		tr.setId(channel+500);
 		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
