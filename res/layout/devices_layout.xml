@@ -8,45 +8,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/ipLabel2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ipLabelText"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <EditText
-            android:id="@+id/ip_address2"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1.75"
-            android:inputType="text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <TextView
-            android:id="@+id/portLabel2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/portLabelText"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <EditText
-            android:id="@+id/port2"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <Button
-            android:id="@+id/connect_button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:onClick="connectClickHandler"
-            android:text="@string/connectButtonString"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
     

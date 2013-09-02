@@ -18,10 +18,13 @@ import com.lp.io.SimpleDeviceMessage;
  * 
  */
 public class PlotUpdater implements MessageConsumer, Runnable {
+
+    private static final String TAG = "PlotUpdater";
+
     /** Sensor series. */
-    private SensorDataSeries[] series;
+    private final SensorDataSeries[] series;
     /** The activity that the plot is in. */
-    private Activity activity;
+    private final Activity activity;
     /** The XYPloy used to plot data. */
     XYPlot dataPlot;
 
@@ -45,15 +48,18 @@ public class PlotUpdater implements MessageConsumer, Runnable {
 	// will create the SimpleDeviceMessage type.
 	SimpleDeviceMessage deviceMsg = (SimpleDeviceMessage) msg;
 	int channel = deviceMsg.getChannel();
-	if (channel < series.length) {	    	    
+	if (channel < series.length) {
 	    // TODO: refactor to scale data with functional input
-	    float scale =  ((DataPlotActivity)activity).getScaleData(channel);
-	    // Timestamp is the time the message was received on the phone. This could
-	    //  potentially be an issue if there is lots of variation in the time it takes
-	    //  for the data to get from the DAQ to the phone. 
-	    series[channel].addLast(deviceMsg.getTimestamp(), deviceMsg.getValue()*scale);
+	    float scale = ((DataPlotActivity) activity).getScaleData(channel);
+	    // Timestamp is the time the message was received on the phone. This
+	    // could
+	    // potentially be an issue if there is lots of variation in the time
+	    // it takes
+	    // for the data to get from the DAQ to the phone.
+	    series[channel].addLast(deviceMsg.getTimestamp(),
+		    deviceMsg.getValue() * scale);
 	} else {
-	    Log.e("DATA SERIES",
+	    Log.e(TAG,
 		    String.format(
 			    "Invalid channel received. Channel %d is greater than number of expected channels, %d.",
 			    channel, series.length));

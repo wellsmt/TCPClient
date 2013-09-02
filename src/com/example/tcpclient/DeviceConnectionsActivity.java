@@ -31,10 +31,11 @@ import com.lp.io.UdpBroadcast;
  * @author marc
  * 
  */
-public class DeviceConnectionsActivity extends AppMenuActivity implements PropertyChangeListener {
+public class DeviceConnectionsActivity extends AppMenuActivity implements
+	PropertyChangeListener {
 
     private final static String TAG = "DEVICE_CONNECTIONS_ACTIVITY";
-    
+
     private EditText ipAddressInput;
     private EditText portInput;
     private Button connect;
@@ -46,16 +47,14 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 
     private BackgroundDiscovery discovery;
     private BackgroundSend send;
-    
+
     private final String HELLO = "Discovery: Who is out there?\r\n";
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.devices_layout);
 	context = getApplicationContext();
-	ipAddressInput = (EditText) findViewById(R.id.ip_address2);
-	portInput = (EditText) findViewById(R.id.port2);
-	connect = (Button) findViewById(R.id.connect_button2);
 	listAdapter = new ConnectedDeviceListAdapter(context);
 
 	deviceList = (ListView) findViewById(R.id.device_list);
@@ -65,36 +64,22 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 	send = new BackgroundSend();
 	send.execute(HELLO);
     }
-    
+
     @Override
-    public void onResume(){
+    public void onResume() {
 	super.onResume();
 	ConnectionManager.INSTANCE.addChangeListener(this);
     }
-    
+
     @Override
-    public void onPause(){
+    public void onPause() {
 	super.onPause();
 	ConnectionManager.INSTANCE.removeChangeListener(this);
     }
 
     /**
-     * Handler for the connect button.
-     * @param view
-     */
-    public void connectClickHandler(View view) {
-	listAdapter.add(new DeviceConnectionInformation(ipAddressInput
-		.getText().toString(), Integer.valueOf(portInput.getText()
-		.toString()), "????", "New Device"));
-	// Attempt connection.
-	connectionTask = new BackgroundConnectionTask(context);
-	connectionTask.setHost(ipAddressInput.getText().toString());
-	connectionTask.setPort(Integer.valueOf(portInput.getText().toString()));
-	connectionTask.execute("");
-    }
-
-    /**
      * Called by the close all button.
+     * 
      * @param view
      */
     public void closeAllClickHandler(View view) {
@@ -113,12 +98,13 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 	send = new BackgroundSend();
 	send.execute(HELLO);
     }
-    
+
     /**
      * Async Send task for sending out the UDP broadcasts. Note that on certian
-     *  andriod devices networks calls must be made in a background thread.
+     * andriod devices networks calls must be made in a background thread.
+     * 
      * @author marc
-     *
+     * 
      */
     public class BackgroundSend extends AsyncTask<String, String, String> {
 	private static final String TAG = "BACKGROUND_SEND_TASK";
@@ -128,7 +114,8 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 	    try {
 		UdpBroadcast broadcaster = ConnectionManager.INSTANCE
 			.getBroadcaster(context);
-		Log.i(TAG, "Sending "+params[0]+" to the UDP broadcast socket.");
+		Log.i(TAG, "Sending " + params[0]
+			+ " to the UDP broadcast socket.");
 		broadcaster.send(params[0]);
 		return null;
 	    } catch (IOException err) {
@@ -151,7 +138,8 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 	public BackgroundDiscovery(Activity activity) {
 	    try {
 		view = activity;
-		queue =  Collections.synchronizedList(new ArrayList<DeviceConnectionInformation>());
+		queue = Collections
+			.synchronizedList(new ArrayList<DeviceConnectionInformation>());
 		broadcaster = ConnectionManager.INSTANCE
 			.getBroadcaster(context);
 		broadcaster.registerObserver(this);
@@ -163,21 +151,22 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements Proper
 	@Override
 	public void onMessage(Message message) {
 	    DeviceBroadcastMessage msg = (DeviceBroadcastMessage) message;
-	    queue.add(new DeviceConnectionInformation(msg.getHost(),msg.getTcpPort(),msg.getMacAddress(), msg.getDeviceName()));
+	    queue.add(new DeviceConnectionInformation(msg.getHost(), msg
+		    .getTcpPort(), msg.getMacAddress(), msg.getDeviceName()));
 	    view.runOnUiThread(this);
 	}
 
 	@Override
 	public void run() {
-	   listAdapter.addAll(queue);
-	   queue.clear();
+	    listAdapter.addAll(queue);
+	    queue.clear();
 	}
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
 	runOnUiThread(new Runnable() {
-	    
+
 	    @Override
 	    public void run() {
 		listAdapter.notifyDataSetChanged();
