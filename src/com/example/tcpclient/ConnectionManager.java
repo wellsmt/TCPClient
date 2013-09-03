@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.net.DhcpInfo;
@@ -17,6 +18,8 @@ import com.lp.io.DeviceMessageInterpreter;
 import com.lp.io.MessageProducer;
 import com.lp.io.SocketConnector;
 import com.lp.io.UdpBroadcast;
+import com.tacuna.common.devices.scpi.Command;
+import com.tacuna.common.devices.scpi.ScheduledCommand;
 import com.tacuna.common.devices.scpi.ScpiMessageExchange;
 
 /**
@@ -72,12 +75,15 @@ public enum ConnectionManager implements PropertyChangeListener {
 	    connection.addChangeListener(this);
 
 	    exchange.setConnection(connection);
-	    // executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
-	    // "MEASure:EXT:ADC?", 1), exchange), 1, 1, TimeUnit.SECONDS);
-	    // executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
-	    // "MEASure:EXT:ADC?", 2), exchange), 1, 1, TimeUnit.SECONDS);
-	    // executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
-	    // "MEASure:EXT:ADC?", 3), exchange), 1, 1, TimeUnit.SECONDS);
+	    executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
+		    "MEASure:EXT:ADC?", 1), exchange), 1, 1000,
+		    TimeUnit.MILLISECONDS);
+	    executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
+		    "MEASure:EXT:ADC?", 2), exchange), 1, 1000,
+		    TimeUnit.MILLISECONDS);
+	    executor.scheduleWithFixedDelay(new ScheduledCommand(new Command(
+		    "MEASure:EXT:ADC?", 0), exchange), 1, 1000,
+		    TimeUnit.MILLISECONDS);
 	    return connection;
 	} catch (final Exception err) {
 	    Log.e(TAG, "Unable to create connection.", err);
