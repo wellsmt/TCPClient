@@ -16,9 +16,9 @@ import com.lp.io.MessageConsumer;
  * 
  */
 public class ListViewUpdater implements MessageConsumer, Runnable {
-    private Activity activity;
-    private MyCustomAdapter adapter;
-    private List<String> messagesToDisplay;
+    private final Activity activity;
+    private final MyCustomAdapter adapter;
+    private final List<String> messagesToDisplay;
 
     /**
      * Constructor. Takes necessary dependencies.
@@ -35,7 +35,7 @@ public class ListViewUpdater implements MessageConsumer, Runnable {
 
     @Override
     public void onMessage(Message message) {
-	//Pass the messages to the UI thread for display.
+	// Pass the messages to the UI thread for display.
 	// The messagesToDisplay list is synchronized so
 	// that this is thread safe.
 	messagesToDisplay.add(message.getData());

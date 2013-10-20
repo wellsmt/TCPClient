@@ -22,7 +22,7 @@ import com.lp.io.SocketConnector;
 public class BackgroundConnectionTask extends AsyncTask<String, String, String>
 	implements PropertyChangeListener {
 
-    private Context context;
+    private final Context context;
     private String host;
     private int port;
 

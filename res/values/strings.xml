@@ -18,4 +18,18 @@
     <string name="refreshButtonString">Refresh</string>
     <string name="closeButtonString">Close All</string>
     <string name="handleLbl">scale</string>
+    <string name="logDataLbl">Disable Data Logging</string>
+    <string name="logDataLblOff">Enable Data Logging</string>
+    <string name="deviceNameLbl">Device Name</string>
+    <string name="hostNameLbl">Host Name</string>
+    <string name="macAddrLbl">MAC Address</string>
+    
+    <string-array name="sampleRates">
+        <item>0.01</item>
+        <item>0.1</item>
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
 </resources>

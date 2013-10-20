@@ -1,9 +1,4 @@
-/**
- * 
- */
 package com.tacuna.android.plot;
-
-import android.util.Log;
 
 import com.androidplot.series.XYSeries;
 import com.tacuna.common.devices.AnalogInputChannel;
@@ -54,7 +49,6 @@ public class AnalogChannelToXYSeriesAdapter implements XYSeries {
     @Override
     public Number getX(int ii) {
 	Number value = channel.getIndex(ii).time;
-	Log.i("Adapter", "getX:" + ii + ", " + value);
 	return value;
     }
 
@@ -66,7 +60,6 @@ public class AnalogChannelToXYSeriesAdapter implements XYSeries {
     @Override
     public Number getY(int ii) {
 	Number value = channel.getIndex(ii).value;
-	Log.i("Adapter", "getY:" + ii + ", " + value);
 	return value;
     }
 

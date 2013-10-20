@@ -71,6 +71,9 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
     public void onResume() {
 	super.onResume();
 	DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+	if (device == null) {
+	    return;
+	}
 	int ii = 0;
 	for (ChannelInterface channel : device.getChannels()) {
 	    // TODO: Remove this if block once we have a better way to make

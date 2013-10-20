@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dip"
         android:layout_weight="1"
         android:orientation="horizontal" >
 
@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Device Name" />
+                    android:text="@string/deviceNameLbl" />
 
                 <TextView
                     android:id="@+id/device_name_text_view"
@@ -41,7 +41,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Host Name" />
+                    android:text="@string/hostNameLbl" />
 
                 <TextView
                     android:id="@+id/device_host_name_text_view"
@@ -55,7 +55,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MAC Address" />
+                    android:text="@string/macAddrLbl" />
 
                 <TextView
                     android:id="@+id/device_mac_text_view"
@@ -64,18 +64,17 @@
                     android:layout_marginLeft="5dp" />
             </TableRow>
 
-            <!--
-        TableRow>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Disconnect"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </TableRow
-            -->
         </TableLayout>
     </LinearLayout>
+    
+       <ToggleButton
+           android:id="@+id/device_log_data_toggle"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/logDataLbl"
+           android:textOn="@string/logDataLbl"
+           android:textOff="@string/logDataLblOff" />
 
     <TableLayout
         android:id="@+id/channelTable"
@@ -84,67 +83,5 @@
         android:orientation="vertical"
         android:showDividers="none"
         android:stretchColumns="1" >
-
-<!--             <TableRow android:showDividers="middle"> -->
-<!--                 <TextView android:layout_width="wrap_content" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:text="AI1" /> -->
-
-<!--                <TextView -->
-<!--                    android:id="@+id/ai1Value" -->
-<!--                    android:layout_width="fill_parent" -->
-<!--                    android:layout_height="wrap_content" -->
-<!--                    android:paddingLeft="10dp" -->
-<!--                    android:text="+0.0000" -->
-<!--                    android:textSize="20sp" /> -->
-                
-<!--                 <Button -->
-<!--                     android:id="@+id/ai1MeasureBtn" -->
-<!--                     android:layout_width="wrap_content" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:gravity="center_vertical|center_horizontal|right" -->
-<!--                     android:text="Measure" /> -->
-                
-<!--             </TableRow> -->
-<!--             <TableRow android:showDividers="middle"> -->
-<!--                 <TextView android:layout_width="wrap_content" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:text="AI2" /> -->
-
-<!--                <TextView -->
-<!--                    android:id="@+id/ai2Value" -->
-<!--                    android:layout_width="fill_parent" -->
-<!--                    android:layout_height="wrap_content" -->
-<!--                    android:paddingLeft="10dp" -->
-<!--                    android:text="+0.0000" -->
-<!--                    android:textSize="20sp" /> -->
-                
-<!--                 <Button android:layout_width="wrap_content" -->
-<!--                     android:id="@+id/ai2MeasureBtn" -->
-<!--                     android:layout_height="wrap_content" -->
-                    
-<!--                     android:text="Measure" -->
-<!--                     /> -->
-<!--             </TableRow> -->
-
-<!--             <TableRow android:showDividers="middle"> -->
-<!--                 <TextView android:layout_width="wrap_content" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:text="AI3" /> -->
-
-<!--                <TextView -->
-<!--                    android:id="@+id/ai3Value" -->
-<!--                    android:layout_width="fill_parent" -->
-<!--                    android:layout_height="wrap_content" -->
-<!--                    android:paddingLeft="10dp" -->
-<!--                    android:text="+0.0000" -->
-<!--                    android:textSize="20sp" /> -->
-                
-<!--                 <Button android:layout_width="wrap_content" -->
-<!--                     android:id="@+id/ai3MeasureBtn" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:text="Measure" -->
-<!--                     /> -->
-<!--             </TableRow> -->
         </TableLayout>
 </LinearLayout>

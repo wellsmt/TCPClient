@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import android.content.Context;
@@ -20,7 +21,6 @@ import com.lp.io.UdpBroadcast;
 import com.tacuna.common.devices.AD7195W;
 import com.tacuna.common.devices.DeviceCommandSchedule;
 import com.tacuna.common.devices.DeviceInterface;
-import com.tacuna.common.devices.scpi.Command;
 
 /**
  * Singleton connection manager class. Manages connections and their data
@@ -52,7 +52,13 @@ public enum ConnectionManager implements PropertyChangeListener {
 	return device;
     }
 
-    private DeviceCommandSchedule schedule = null;
+    private final DeviceCommandSchedule schedule = null;
+
+    private final HashMap<String, DeviceCommandSchedule> deviceSchedules = new HashMap<String, DeviceCommandSchedule>();
+
+    public DeviceCommandSchedule getScheduleByDeviceName(String device) {
+	return deviceSchedules.get(device);
+    }
 
     // private DataInterpreter dataInterpreter = new
     // ProtoBuffersDataFrameInterpretor();
@@ -84,10 +90,11 @@ public enum ConnectionManager implements PropertyChangeListener {
 	    connection = device.getConnection();
 	    // connection = new SocketConnector(host, port, dataInterpreter);
 	    connection.addChangeListener(this);
-	    schedule = new DeviceCommandSchedule(device);
-	    schedule.schedule(new Command("MEASure:EXT:ADC?", 1), 1000);
-	    schedule.schedule(new Command("MEASure:EXT:ADC?", 2), 1000);
-	    schedule.schedule(new Command("MEASure:EXT:ADC?", 3), 1000);
+	    DeviceCommandSchedule schedule = new DeviceCommandSchedule(device);
+	    // schedule.schedule(new Command("MEASure:EXT:ADC?", 1), 1000);
+	    // schedule.schedule(new Command("MEASure:EXT:ADC?", 2), 1000);
+	    // schedule.schedule(new Command("MEASure:EXT:ADC?", 3), 1000);
+	    deviceSchedules.put(device.getDeviceName(), schedule);
 	    return connection;
 	} catch (final Exception err) {
 	    Log.e(TAG, "Unable to create connection.", err);

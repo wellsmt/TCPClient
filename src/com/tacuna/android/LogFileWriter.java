@@ -50,8 +50,8 @@ public class LogFileWriter implements MessageConsumer {
 	    data.createNewFile();
 	}
 	buf = new BufferedWriter(new FileWriter(data, true));
-    }    
-    
+    }
+
     @Override
     public void onMessage(Message message) {
 	// If the buffer is null, do nothing.
@@ -59,7 +59,7 @@ public class LogFileWriter implements MessageConsumer {
 	    return;
 	}
 	try {
-	    buf.append(message.getTimestamp()+","+message.getData());
+	    buf.append(message.getTimestamp() + "," + message.getData());
 	    buf.newLine();
 	    buf.flush();
 	} catch (IOException err) {

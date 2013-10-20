@@ -24,6 +24,8 @@ import android.widget.ToggleButton;
 
 import com.example.tcpclient.R;
 import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.devices.DeviceCommandSchedule;
+import com.tacuna.common.devices.DeviceInterface;
 import com.tacuna.common.devices.scpi.Command;
 
 /**
@@ -35,11 +37,11 @@ import com.tacuna.common.devices.scpi.Command;
 public class ConnectedDeviceListAdapter extends BaseAdapter {
     private static final String TAG = "CONNECTED_DEVICE_LIST_ADAPTER";
     /** The application context */
-    private Context context;
+    private final Context context;
     /** The list of devices that are known to the application */
-    private HashSet<DeviceConnectionInformation> devicesItems;
+    private final HashSet<DeviceConnectionInformation> devicesItems;
     /** The layout inflater. */
-    private LayoutInflater layoutInflater;
+    private final LayoutInflater layoutInflater;
 
     private BackgroundConnectionTask task;
 
@@ -133,108 +135,161 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    deviceConnectionToggle.setOnClickListener(new ToggleConnection(
 		    info, deviceConnectionToggle));
 
-	    addInputChannels(convertView);
+	    DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+	    // if (device != null) {
+	    addInputChannels(convertView, device);
+	    // }
+
 	}
 
 	// this method must return the view corresponding to the data at the
 	// specified position.
 	return convertView;
     }
-    
-    protected void addInputChannels(View convertView){
-	    int NUMBER_OF_AI_CHANNELS = 8;
-	    TableLayout table = (TableLayout)convertView.findViewById(R.id.channelTable);
-	    table.removeAllViews();
-	    for(int channel =0;channel < NUMBER_OF_AI_CHANNELS;channel++){
-		TableRow tr = new TableRow(context);
-		tr.setId(channel+100);
-		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
-		
-		//Channel label:
-		TextView label = new TextView(context);
-		label.setId(channel+200);
-		label.setText("AI"+channel);
-		label.setPadding(5, 0, 5, 5);
-		//label.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		tr.addView(label);
-		
-		TextView measuredValue = new TextView(context);
-		measuredValue.setId(channel+300);
-		measuredValue.setText("+0.0000");
-		measuredValue.setTextSize(20);
-		measuredValue.setTextColor(Color.BLACK);
-		measuredValue.setPadding(10, 5, 5, 5);
-		//measuredValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		tr.addView(measuredValue);
-		
-		Button measureBtn = new Button(context);
-		measureBtn.setId(channel+400);
-		
-		//measureBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		measureBtn.setGravity(Gravity.CENTER_VERTICAL|Gravity.RIGHT);
-		measureBtn.setText("Measure");
-		measureBtn.setOnClickListener(new MeasureValue(measuredValue,
+
+    protected void addInputChannels(View convertView, DeviceInterface device) {
+	int NUMBER_OF_AI_CHANNELS = 8;// device.getNumberOfAnalogInChannels();
+	TableLayout table = (TableLayout) convertView
+		.findViewById(R.id.channelTable);
+	table.removeAllViews();
+	for (int channel = 0; channel < NUMBER_OF_AI_CHANNELS; channel++) {
+	    TableRow tr = new TableRow(context);
+	    tr.setId(channel + 100);
+	    // tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
+
+	    // Channel label:
+	    TextView label = new TextView(context);
+	    label.setId(channel + 200);
+	    label.setText("AI" + channel);
+	    label.setPadding(5, 0, 5, 5);
+	    // label.setLayoutParams(new
+	    // LayoutParams(LayoutParams.WRAP_CONTENT));
+	    tr.addView(label);
+
+	    TextView measuredValue = new TextView(context);
+	    measuredValue.setId(channel + 300);
+	    measuredValue.setText("+0.0000");
+	    measuredValue.setTextSize(20);
+	    measuredValue.setTextColor(Color.BLACK);
+	    measuredValue.setPadding(10, 5, 5, 5);
+	    tr.addView(measuredValue);
+
+	    Button measureBtn = new Button(context);
+	    measureBtn.setId(channel + 400);
+
+	    measureBtn.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+	    measureBtn.setText("Measure");
+	    measureBtn.setOnClickListener(new MeasureValue(measuredValue,
 		    new Command("MEASure:EXT:ADC?", channel)));
-		tr.addView(measureBtn);
-		
-		table.addView(tr);
-	    }
-	    
-	    int NUMBER_OF_DI_CHANNELS = 8;
-	    for(int channel =0;channel <= NUMBER_OF_DI_CHANNELS;channel++){
-		TableRow tr = new TableRow(context);
-		tr.setId(channel+500);
-		//tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
-		
-		//Channel label:
-		TextView label = new TextView(context);
-		label.setId(channel+600);
-		label.setText("DI"+channel);
-		label.setPadding(5, 0, 5, 5);
-		//label.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		tr.addView(label);
-		
-		TextView measuredValue = new TextView(context);
-		measuredValue.setId(channel+700);
-		measuredValue.setText("0");
-		measuredValue.setTextSize(20);
-		measuredValue.setTextColor(Color.BLACK);
-		measuredValue.setPadding(10, 5, 5, 5);
-		//measuredValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		tr.addView(measuredValue);
-		
-		Button measureBtn = new Button(context);
-		measureBtn.setId(channel+800);
-		
-		//measureBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT));
-		measureBtn.setGravity(Gravity.CENTER_VERTICAL|Gravity.RIGHT);
-		measureBtn.setText("Measure");
-		measureBtn.setOnClickListener(new MeasureValue(measuredValue,
+	    tr.addView(measureBtn);
+
+	    ToggleButton toggleAm = new ToggleButton(context);
+	    toggleAm.setId(channel + 440);
+	    toggleAm.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+	    toggleAm.setTextOn("");
+	    toggleAm.setTextOff("");
+	    toggleAm.setOnClickListener(new AutoMeasureValue(measureBtn,
+		    toggleAm, new Command("MEASure:EXT:ADC?", channel)));
+	    tr.addView(toggleAm);
+
+	    table.addView(tr);
+	}
+
+	int NUMBER_OF_DI_CHANNELS = 8;// device.getNumberOfDigitalInChannels();
+	for (int channel = 0; channel <= NUMBER_OF_DI_CHANNELS; channel++) {
+	    TableRow tr = new TableRow(context);
+	    tr.setId(channel + 500);
+	    // tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
+
+	    // Channel label:
+	    TextView label = new TextView(context);
+	    label.setId(channel + 600);
+	    label.setText("DI" + channel);
+	    label.setPadding(5, 0, 5, 5);
+	    // label.setLayoutParams(new
+	    // LayoutParams(LayoutParams.WRAP_CONTENT));
+	    tr.addView(label);
+
+	    TextView measuredValue = new TextView(context);
+	    measuredValue.setId(channel + 700);
+	    measuredValue.setText("0");
+	    measuredValue.setTextSize(20);
+	    measuredValue.setTextColor(Color.BLACK);
+	    measuredValue.setPadding(10, 5, 5, 5);
+	    // measuredValue.setLayoutParams(new
+	    // LayoutParams(LayoutParams.WRAP_CONTENT));
+	    tr.addView(measuredValue);
+
+	    Button measureBtn = new Button(context);
+	    measureBtn.setId(channel + 800);
+
+	    // measureBtn.setLayoutParams(new
+	    // LayoutParams(LayoutParams.WRAP_CONTENT));
+	    measureBtn.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+	    measureBtn.setText("Measure");
+	    measureBtn.setOnClickListener(new MeasureValue(measuredValue,
 		    new Command("INPut:PORt:STATe?", channel)));
-		tr.addView(measureBtn);
-		
-		table.addView(tr);
+	    tr.addView(measureBtn);
+
+	    table.addView(tr);
+	}
+    }
+
+    protected class AutoMeasureValue implements View.OnClickListener {
+	/**
+	 * @param measureButton
+	 * @param button
+	 * @param command
+	 */
+	public AutoMeasureValue(Button measureButton, ToggleButton button,
+		Command command) {
+	    super();
+	    this.measureButton = measureButton;
+	    this.button = button;
+	    this.command = command;
+	}
+
+	private final Button measureButton;
+	private final ToggleButton button;
+	private final Command command;
+
+	@Override
+	public void onClick(View v) {
+	    boolean selected = button.isChecked();
+	    DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+	    DeviceCommandSchedule schedule = ConnectionManager.INSTANCE
+		    .getScheduleByDeviceName(device.getDeviceName());
+	    if (selected) {
+		measureButton.setEnabled(false);
+		schedule.schedule(command, 1000);
+	    } else {
+		measureButton.setEnabled(true);
+		schedule.remove(command);
 	    }
+	}
     }
 
     /**
-     * OnClick Listener used to handle button clicks that make
-     *  a SCPI command and set the result to a TextView.
+     * OnClick Listener used to handle button clicks that make a SCPI command
+     * and set the result to a TextView.
+     * 
      * @author marc
-     *
+     * 
      */
     protected class MeasureValue implements View.OnClickListener {
 
 	/**
-	 * Measure SCPI command extends the background SCPI command
-	 *  class and is used to update the view with the results from
-	 *  executing the SCPI command.
+	 * Measure SCPI command extends the background SCPI command class and is
+	 * used to update the view with the results from executing the SCPI
+	 * command.
+	 * 
 	 * @author marc
-	 *
+	 * 
 	 */
 	protected class MeasureScpiCommand extends BackgroundScpiCommand {
-	    private TextView text;
-	    public MeasureScpiCommand(TextView text,View enableOnComplete) {
+	    private final TextView text;
+
+	    public MeasureScpiCommand(TextView text, View enableOnComplete) {
 		super();
 		this.text = text;
 	    }
@@ -256,8 +311,8 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    this.command = command;
 	}
 
-	private TextView text;
-	private Command command;
+	private final TextView text;
+	private final Command command;
 	MeasureScpiCommand async;
 
 	@Override
@@ -267,21 +322,22 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	 * @param view
 	 */
 	public void onClick(View v) {
-	    if(isNotRunning()){
-		async = new MeasureScpiCommand(text,v);
+	    if (isNotRunning()) {
+		async = new MeasureScpiCommand(text, v);
 		async.execute(command);
 	    }
 	}
-	
-	protected Boolean isNotRunning(){
-	    return async == null || async.getStatus() != AsyncTask.Status.RUNNING;
+
+	protected Boolean isNotRunning() {
+	    return async == null
+		    || async.getStatus() != AsyncTask.Status.RUNNING;
 	}
     }
 
     public class ToggleConnection implements View.OnClickListener,
 	    PropertyChangeListener {
-	private ToggleButton toggle;
-	private DeviceConnectionInformation connectionInfo;
+	private final ToggleButton toggle;
+	private final DeviceConnectionInformation connectionInfo;
 
 	ToggleConnection(DeviceConnectionInformation info,
 		ToggleButton deviceConnectionToggle) {
@@ -317,5 +373,4 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	}
 
     }
-
 }
