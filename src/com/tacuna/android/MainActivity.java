@@ -57,8 +57,8 @@ public class MainActivity extends AppMenuActivity {
 	    public void onClick(View v) {
 		if (record.isChecked()) {
 		    // Create and register the log file writer
-		    fileWriter = new LogFileWriter(dir.getAbsolutePath(),
-			    extension);
+		    fileWriter = new LogFileWriter(extension, Environment
+			    .getExternalStorageDirectory());
 		    ConnectionManager.INSTANCE.getConnectionMessageProducer()
 			    .registerObserver(fileWriter);
 

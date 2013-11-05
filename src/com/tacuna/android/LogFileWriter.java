@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
+import com.lp.io.SimpleDeviceMessage;
 
 /**
  * The log file writer class is a message consumer that writes all of the
@@ -16,9 +18,10 @@ import com.lp.io.MessageConsumer;
  */
 public class LogFileWriter implements MessageConsumer {
     public static final String TAG = "LOG FILE WRITER";
-    String directory;
+
     String extension;
     File data;
+    File dir;
     BufferedWriter buf;
 
     /**
@@ -28,9 +31,9 @@ public class LogFileWriter implements MessageConsumer {
      * @param dir
      * @param extension
      */
-    LogFileWriter(String dir, String extension) {
-	this.directory = dir;
+    LogFileWriter(String extension, File directory) {
 	this.extension = extension;
+	this.dir = directory;
     }
 
     /**
@@ -43,13 +46,31 @@ public class LogFileWriter implements MessageConsumer {
 	if (buf != null) {
 	    buf.close();
 	}
-	String filePath = directory + "/" + filename + extension;
-	Log.d(TAG, String.format("Attempting to open log file: %s", filePath));
-	data = new File(filePath);
-	if (!data.exists()) {
-	    data.createNewFile();
+
+	if (isExternalStorageWritable()) {
+
+	    String filePath = filename + extension;
+	    Log.d(TAG,
+		    String.format("Attempting to open log file: %s", filePath));
+	    data = new File(dir, filePath);
+	    if (!data.exists()) {
+		data.createNewFile();
+	    }
+	    buf = new BufferedWriter(new FileWriter(data, true));
+	} else {
+	    Log.e(TAG, "External Device is not writable.");
 	}
-	buf = new BufferedWriter(new FileWriter(data, true));
+    }
+
+    /**
+     * Checks if external storage is available for read and write
+     */
+    public boolean isExternalStorageWritable() {
+	String state = Environment.getExternalStorageState();
+	if (Environment.MEDIA_MOUNTED.equals(state)) {
+	    return true;
+	}
+	return false;
     }
 
     @Override
@@ -59,7 +80,9 @@ public class LogFileWriter implements MessageConsumer {
 	    return;
 	}
 	try {
-	    buf.append(message.getTimestamp() + "," + message.getData());
+	    SimpleDeviceMessage msg = (SimpleDeviceMessage) message;
+	    buf.append(msg.getTimestamp() + "," + msg.getChannel() + ","
+		    + msg.getValue());
 	    buf.newLine();
 	    buf.flush();
 	} catch (IOException err) {
@@ -67,4 +90,11 @@ public class LogFileWriter implements MessageConsumer {
 	}
     }
 
+    public void close() {
+	try {
+	    buf.close();
+	} catch (IOException e) {
+	    Log.e(TAG, "Error closing buffer.", e);
+	}
+    }
 }

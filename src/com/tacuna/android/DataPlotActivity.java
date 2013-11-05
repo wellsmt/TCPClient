@@ -45,7 +45,11 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    { Color.rgb(51, 51, 255), Color.rgb(153, 153, 253) },
 	    { Color.rgb(51, 255, 51), Color.rgb(153, 255, 153) },
 	    { Color.rgb(255, 255, 51), Color.rgb(255, 255, 153) },
-	    { Color.rgb(51, 255, 255), Color.rgb(255, 255, 153) } };
+	    { Color.rgb(51, 255, 255), Color.rgb(255, 255, 153) },
+	    // TODO: These need to be made into different colors.
+	    { Color.rgb(255, 51, 51), Color.rgb(255, 153, 153) },
+	    { Color.rgb(51, 51, 255), Color.rgb(153, 153, 253) },
+	    { Color.rgb(51, 255, 51), Color.rgb(153, 255, 153) }, };
 
     /**
      * UI Updater that refreshes the grid.
@@ -79,12 +83,12 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    // TODO: Remove this if block once we have a better way to make
 	    // channels
 	    // active/ not active.
-	    if (ii == 1 || ii == 2 || ii == 3) {
-		Log.i("DataPlotActivity", "Adding " + channel.getName());
-		addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
-			(AnalogInputChannel) channel), ii);
+	    // if (ii == 1 || ii == 2 || ii == 3) {
+	    Log.i("DataPlotActivity", "Adding " + channel.getName());
+	    addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
+		    (AnalogInputChannel) channel), ii);
 
-	    }
+	    // }
 	    ii++;
 	}
 
@@ -191,7 +195,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      * Run method used to update the DataPlotActivity.
      */
     public void run() {
-	plot.setRangeBoundaries(0, 4, BoundaryMode.FIXED);
+	plot.setRangeBoundaries(-5, 5, BoundaryMode.FIXED);
 	Date now = new Date();
 	plot.setDomainBoundaries(now.getTime() - 10000, now.getTime(),
 		BoundaryMode.FIXED);

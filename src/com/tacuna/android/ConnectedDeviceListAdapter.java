@@ -136,6 +136,12 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		    info, deviceConnectionToggle));
 
 	    DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+
+	    final ToggleButton deviceLogToggle = (ToggleButton) convertView
+		    .findViewById(R.id.device_log_data_toggle);
+	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
+		    device));
+
 	    // if (device != null) {
 	    addInputChannels(convertView, device);
 	    // }

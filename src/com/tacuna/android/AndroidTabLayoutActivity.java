@@ -23,6 +23,7 @@ public class AndroidTabLayoutActivity extends TabActivity {
 	TabSpec mainspec = tabHost.newTabSpec("Main");
 	// setting Title and Icon for the Tab
 	// mainspec.setIndicator("Logs");//TODO: Add an icon
+
 	// Intent mainIntent = new Intent(this, MainActivity.class);
 	// mainspec.setContent(mainIntent);
 
