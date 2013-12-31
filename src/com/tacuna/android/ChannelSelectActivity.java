@@ -26,7 +26,7 @@ public class ChannelSelectActivity extends FragmentActivity {
     /**
      * Int used for stating this activity using an Intent.
      */
-    public static final int PICK_CHANNELS = 0;
+    public static final int PICK_ANALOG_CHANNELS = 0;
 
     ArrayList<Integer> selectedChannels = new ArrayList<Integer>();
     ArrayList<ChannelInterface> allChannels = new ArrayList<ChannelInterface>();

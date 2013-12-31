@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -136,11 +137,21 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	}
     }
 
+    @SuppressLint("SimpleDateFormat")
+    /**
+     * Time formatter used for the Android plot Time axis. 
+     * @author Marc
+     *
+     */
     class TimeFormat extends Format {
 
+	/**
+	 * Formatter for converting the time in ms to the time in
+	 * minutes/seconds
+	 */
 	private final SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
 	/**
-	 * 
+	 * Required for serialization warning.
 	 */
 	private static final long serialVersionUID = 3268501563200906015L;
 
@@ -252,9 +263,21 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      * Run method used to update the DataPlotActivity.
      */
     public void run() {
-	plot.setRangeBoundaries(-5, 5, BoundaryMode.FIXED);
+	// Get the min and max value to display using the active channels
+	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	float max = Float.MIN_VALUE;
+	float min = Float.MAX_VALUE;
+
+	for (ChannelInterface channel : activeChannelsList) {
+	    float channelMax = channel.getMaximum();
+	    max = (channelMax > max) ? channelMax : max;
+	    float channelMin = channel.getMinimum();
+	    min = (channelMin < min) ? channelMin : min;
+	}
+
+	plot.setRangeBoundaries(min - 0.5, max + 0.5, BoundaryMode.FIXED);
 	Date now = new Date();
-	plot.setDomainBoundaries(now.getTime() - 10000, now.getTime(),
+	plot.setDomainBoundaries(now.getTime() - 60000, now.getTime(),
 		BoundaryMode.FIXED);
 	plot.redraw();
 	redrawTable();
@@ -266,6 +289,12 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 
     }
 
+    /**
+     * OnClickListener for the AddChannel button.
+     * 
+     * @author Marc
+     * 
+     */
     protected class AddChannelClickListener implements View.OnClickListener {
 
 	ArrayList<Integer> selectedChannels = new ArrayList<Integer>();
@@ -279,7 +308,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	public void onClick(View view) {
 	    startActivityForResult(new Intent(DataPlotActivity.this,
 		    ChannelSelectActivity.class),
-		    ChannelSelectActivity.PICK_CHANNELS);
+		    ChannelSelectActivity.PICK_ANALOG_CHANNELS);
 	}
     }
 }

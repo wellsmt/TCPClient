@@ -22,6 +22,7 @@ import com.example.tcpclient.R;
 public class AndroidTabLayoutActivity extends TabActivity {
     /** Called when the activity is first created. */
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -37,15 +38,15 @@ public class AndroidTabLayoutActivity extends TabActivity {
 	// Tab Label --------
 	TabSpec deviceConnections = tabHost.newTabSpec("Device");
 
-	deviceConnections.setIndicator("Network Devices", getResources()
-		.getDrawable(R.drawable.wifi_icon));
+	deviceConnections.setIndicator("Devices",
+		getResources().getDrawable(R.drawable.wifi_icon));
 	Intent deviceConnectionsIntent = new Intent(this,
 		DeviceConnectionsActivity.class);
 	deviceConnections.setContent(deviceConnectionsIntent);
 
 	// Tab Label --------
 	TabSpec plottab = tabHost.newTabSpec("Charts");
-	plottab.setIndicator("Charts",
+	plottab.setIndicator("Measurements",
 		getResources().getDrawable(R.drawable.charts_icon));
 	Intent plotIntent = new Intent(this, DataPlotActivity.class);
 	plottab.setContent(plotIntent);

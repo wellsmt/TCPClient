@@ -4,8 +4,8 @@ package com.tacuna.android;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -40,7 +40,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     /** The application context */
     private final Context context;
     /** The list of devices that are known to the application */
-    private final HashSet<DeviceInterface> devicesItems;
+    private final Set<DeviceInterface> devicesItems;
     /** The layout inflater. */
     private final LayoutInflater layoutInflater;
 
@@ -52,9 +52,8 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
      * @param context
      */
     ConnectedDeviceListAdapter(Context context) {
-	this.devicesItems = new HashSet<DeviceInterface>();
-
 	this.context = context;
+	this.devicesItems = ConnectionManager.INSTANCE.knownDevices;
 	// get the layout inflater
 	this.layoutInflater = (LayoutInflater) context
 		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -77,7 +76,6 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-	// TODO Auto-generated method stub
 	return devicesItems.size();
     }
 
@@ -382,7 +380,9 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		task.execute("");
 	    } else {
 		device.getConnection().close();
-		task.cancel(true);
+		if (task != null) {
+		    task.cancel(true);
+		}
 	    }
 	}
 
