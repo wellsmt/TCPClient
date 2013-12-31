@@ -21,6 +21,7 @@
     <string name="logDataLbl">Disable Data Logging</string>
     <string name="logDataLblOff">Enable Data Logging</string>
     <string name="deviceNameLbl">Device Name</string>
+    <string name="deviceTypeLbl">Device Type</string>
     <string name="hostNameLbl">Host Name</string>
     <string name="macAddrLbl">MAC Address</string>
     

@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.lp.io.SocketConnector;
+import com.tacuna.common.components.ConnectionManager;
+import com.tacuna.common.devices.DeviceInterface;
 
 /**
  * Background connection task. Attempts to make the connection and will notify
@@ -23,34 +25,16 @@ public class BackgroundConnectionTask extends AsyncTask<String, String, String>
 	implements PropertyChangeListener {
 
     private final Context context;
-    private String host;
-    private int port;
+    private final DeviceInterface device;
 
     /**
      * Constructor. Takes the application Context.
      * 
      * @param context
      */
-    BackgroundConnectionTask(Context context) {
+    BackgroundConnectionTask(Context context, DeviceInterface device) {
 	this.context = context;
-    }
-
-    /**
-     * Sets the host name or IP address for this connection.
-     * 
-     * @param host
-     */
-    public void setHost(String host) {
-	this.host = host;
-    }
-
-    /**
-     * Sets the port for this connection.
-     * 
-     * @param port
-     */
-    public void setPort(int port) {
-	this.port = port;
+	this.device = device;
     }
 
     private SocketConnector connection;
@@ -59,8 +43,7 @@ public class BackgroundConnectionTask extends AsyncTask<String, String, String>
     protected String doInBackground(String... message) {
 	try {
 	    // Attempt connection.
-	    connection = ConnectionManager.INSTANCE
-		    .createConnection(host, port);
+	    connection = ConnectionManager.INSTANCE.createConnection(device);
 	    connection.addChangeListener(this);
 	} catch (Exception err) {
 	    Log.e("CONNECTION FAILURE", "Error connecting to device. Reason: "

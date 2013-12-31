@@ -15,7 +15,7 @@
     <application
         android:allowBackup="true"
         android:configChanges="keyboardHidden"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/launcher"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme" >
@@ -39,11 +39,10 @@
         <!--  Data Plot Activity -->
         <activity android:name="com.tacuna.android.DataPlotActivity" />
         
-        <!--  Schematic View Activity -->
-        <activity android:name="com.tacuna.android.SchematicViewActivity" />
-        
-        <!--  Schematic View Activity -->
-        <activity android:name="com.tacuna.android.ComponentOptionsActivity" />
+   <activity
+            android:name="com.tacuna.android.ChannelSelectActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
     </application>
 
 </manifest>

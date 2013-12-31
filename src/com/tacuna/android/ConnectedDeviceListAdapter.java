@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 
 import com.example.tcpclient.R;
 import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.DeviceCommandSchedule;
 import com.tacuna.common.devices.DeviceInterface;
 import com.tacuna.common.devices.scpi.Command;
@@ -39,7 +40,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     /** The application context */
     private final Context context;
     /** The list of devices that are known to the application */
-    private final HashSet<DeviceConnectionInformation> devicesItems;
+    private final HashSet<DeviceInterface> devicesItems;
     /** The layout inflater. */
     private final LayoutInflater layoutInflater;
 
@@ -51,7 +52,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
      * @param context
      */
     ConnectedDeviceListAdapter(Context context) {
-	this.devicesItems = new HashSet<DeviceConnectionInformation>();
+	this.devicesItems = new HashSet<DeviceInterface>();
 
 	this.context = context;
 	// get the layout inflater
@@ -59,13 +60,12 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void add(final DeviceConnectionInformation info) {
+    public void add(final DeviceInterface info) {
 	devicesItems.add(info);
 	this.notifyDataSetChanged();
     }
 
-    public void addAll(
-	    Collection<? extends DeviceConnectionInformation> collection) {
+    public void addAll(Collection<? extends DeviceInterface> collection) {
 	devicesItems.addAll(collection);
 	this.notifyDataSetChanged();
     }
@@ -83,8 +83,8 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-	Iterator<DeviceConnectionInformation> iter = devicesItems.iterator();
-	DeviceConnectionInformation item = iter.next();
+	Iterator<DeviceInterface> iter = devicesItems.iterator();
+	DeviceInterface item = iter.next();
 	for (int ii = 1; ii <= position; ii++) {
 	    item = iter.next();
 	}
@@ -107,45 +107,49 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 
 	// get the string item from the position "position" from array list to
 	// put it on the TextView
-	final DeviceConnectionInformation info = (DeviceConnectionInformation) getItem(position);
-	if (info != null) {
+	final DeviceInterface device = (DeviceInterface) getItem(position);
+	if (device != null) {
 	    TextView itemDeviceName = (TextView) convertView
 		    .findViewById(R.id.device_name_text_view);
 	    if (itemDeviceName != null) {
-		itemDeviceName.setText(info.getName());
+		itemDeviceName.setText(device.getDeviceName());
+	    }
+	    TextView deviceTypeName = (TextView) convertView
+		    .findViewById(R.id.device_type_name_text_view);
+	    if (deviceTypeName != null) {
+		deviceTypeName.setText(device.getDeviceType());
 	    }
 	    TextView itemHostName = (TextView) convertView
 		    .findViewById(R.id.device_host_name_text_view);
 	    if (itemHostName != null) {
 		// set the item name on the TextView
-		itemHostName.setText(info.getHost());
+		itemHostName.setText(device.getNetworkAddress().getHostName());
 	    }
 
 	    TextView macAddressView = (TextView) convertView
 		    .findViewById(R.id.device_mac_text_view);
 	    if (macAddressView != null) {
 		// set the item name on the TextView
-		macAddressView.setText(info.getMacAddress());
+		macAddressView.setText(device.getMacAddress());
 	    }
 	    final ToggleButton deviceConnectionToggle = (ToggleButton) convertView
 		    .findViewById(R.id.device_connection_toggle);
-	    boolean isEnabled = ConnectionManager.INSTANCE.isAppConnected(info);
-	    deviceConnectionToggle.setChecked(isEnabled);
+
+	    boolean isConnected = (device.getConnection() == null) ? false
+		    : device.getConnection().isConnected();
+	    deviceConnectionToggle.setChecked(isConnected);
 
 	    deviceConnectionToggle.setOnClickListener(new ToggleConnection(
-		    info, deviceConnectionToggle));
-
-	    DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+		    device, deviceConnectionToggle));
 
 	    final ToggleButton deviceLogToggle = (ToggleButton) convertView
 		    .findViewById(R.id.device_log_data_toggle);
 	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
 		    device));
-
-	    // if (device != null) {
-	    addInputChannels(convertView, device);
+	    deviceLogToggle.setEnabled(isConnected);
+	    // if (isConnected) {
+	    // addInputChannels(convertView, device);
 	    // }
-
 	}
 
 	// this method must return the view corresponding to the data at the
@@ -154,18 +158,18 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     }
 
     protected void addInputChannels(View convertView, DeviceInterface device) {
-	int NUMBER_OF_AI_CHANNELS = 8;// device.getNumberOfAnalogInChannels();
+	int NUMBER_OF_AI_CHANNELS = device.getNumberOfAnalogInChannels();
 	TableLayout table = (TableLayout) convertView
 		.findViewById(R.id.channelTable);
 	table.removeAllViews();
 	for (int channel = 0; channel < NUMBER_OF_AI_CHANNELS; channel++) {
 	    TableRow tr = new TableRow(context);
-	    tr.setId(channel + 100);
+	    // tr.setId(channel + 100);
 	    // tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
 
 	    // Channel label:
 	    TextView label = new TextView(context);
-	    label.setId(channel + 200);
+	    // label.setId(channel + 200);
 	    label.setText("AI" + channel);
 	    label.setPadding(5, 0, 5, 5);
 	    // label.setLayoutParams(new
@@ -173,7 +177,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    tr.addView(label);
 
 	    TextView measuredValue = new TextView(context);
-	    measuredValue.setId(channel + 300);
+	    // measuredValue.setId(channel + 300);
 	    measuredValue.setText("+0.0000");
 	    measuredValue.setTextSize(20);
 	    measuredValue.setTextColor(Color.BLACK);
@@ -181,7 +185,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    tr.addView(measuredValue);
 
 	    Button measureBtn = new Button(context);
-	    measureBtn.setId(channel + 400);
+	    // measureBtn.setId(channel + 400);
 
 	    measureBtn.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 	    measureBtn.setText("Measure");
@@ -190,18 +194,20 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    tr.addView(measureBtn);
 
 	    ToggleButton toggleAm = new ToggleButton(context);
-	    toggleAm.setId(channel + 440);
-	    toggleAm.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-	    toggleAm.setTextOn("");
-	    toggleAm.setTextOff("");
+	    // toggleAm.setId(channel + 440);
+	    // toggleAm.setGravity(Gravity.CENTER_HORIZONTAL
+	    // | Gravity.FILL_VERTICAL);
+	    toggleAm.setText("Off");
+	    toggleAm.setTextOn("On");
+	    toggleAm.setTextOff("Off");
 	    toggleAm.setOnClickListener(new AutoMeasureValue(measureBtn,
-		    toggleAm, new Command("MEASure:EXT:ADC?", channel)));
+		    toggleAm, new Command("MEASure:EXT:ADC?", channel), device));
 	    tr.addView(toggleAm);
 
 	    table.addView(tr);
 	}
 
-	int NUMBER_OF_DI_CHANNELS = 8;// device.getNumberOfDigitalInChannels();
+	int NUMBER_OF_DI_CHANNELS = device.getNumberOfDigitalInChannels();
 	for (int channel = 0; channel <= NUMBER_OF_DI_CHANNELS; channel++) {
 	    TableRow tr = new TableRow(context);
 	    tr.setId(channel + 500);
@@ -248,21 +254,24 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	 * @param command
 	 */
 	public AutoMeasureValue(Button measureButton, ToggleButton button,
-		Command command) {
+		Command command, DeviceInterface device) {
 	    super();
 	    this.measureButton = measureButton;
 	    this.button = button;
 	    this.command = command;
+	    this.device = device;
 	}
 
 	private final Button measureButton;
 	private final ToggleButton button;
 	private final Command command;
+	private final DeviceInterface device;
 
 	@Override
 	public void onClick(View v) {
 	    boolean selected = button.isChecked();
-	    DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+	    // DeviceInterface device = ConnectionManagerAndriod.INSTANCE
+	    // .getDevice();
 	    DeviceCommandSchedule schedule = ConnectionManager.INSTANCE
 		    .getScheduleByDeviceName(device.getDeviceName());
 	    if (selected) {
@@ -343,11 +352,11 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
     public class ToggleConnection implements View.OnClickListener,
 	    PropertyChangeListener {
 	private final ToggleButton toggle;
-	private final DeviceConnectionInformation connectionInfo;
+	private final DeviceInterface device;
 
-	ToggleConnection(DeviceConnectionInformation info,
+	ToggleConnection(DeviceInterface info,
 		ToggleButton deviceConnectionToggle) {
-	    this.connectionInfo = info;
+	    this.device = info;
 	    this.toggle = deviceConnectionToggle;
 	}
 
@@ -366,15 +375,14 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	public void onClick(View v) {
 	    if (toggle.isChecked()) {
 		Log.i(TAG, String.format(
-			"Starting background task to connect to %s:%d",
-			connectionInfo.getHost(), connectionInfo.getPort()));
-		task = new BackgroundConnectionTask(context);
-		task.setHost(connectionInfo.getHost());
-		task.setPort(connectionInfo.getPort());
+			"Starting background task to connect to %s:%d", device
+				.getNetworkAddress().getHostName(), device
+				.getNetworkAddress().getPort()));
+		task = new BackgroundConnectionTask(context, device);
 		task.execute("");
 	    } else {
+		device.getConnection().close();
 		task.cancel(true);
-		ConnectionManager.INSTANCE.closeAll();
 	    }
 	}
 

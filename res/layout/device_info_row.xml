@@ -1,26 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/device_info_row"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="5dp" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:padding="5dp" >
 
-        <ToggleButton
-            android:id="@+id/device_connection_toggle"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:text="" />
+        <ImageView
+            android:id="@+id/deviceIcon"
+            android:contentDescription="DAQ Icon"
+            android:layout_width="60dip"
+            android:layout_height="60dip"
+            android:src="@drawable/ad7195w" />
+        
 
         <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:paddingLeft="5dip" >
 
             <TableRow>
 
@@ -36,6 +42,20 @@
                     android:layout_marginLeft="5dp" />
             </TableRow>
 
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/deviceTypeLbl" />
+
+              <TextView
+                    android:id="@+id/device_type_name_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp" />
+            </TableRow>
+            
             <TableRow>
 
                 <TextView
@@ -68,7 +88,13 @@
         </TableLayout>
     </LinearLayout>
     
-       <ToggleButton
+    <ToggleButton
+            android:id="@+id/device_connection_toggle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+    
+    <ToggleButton
            android:id="@+id/device_log_data_toggle"
            android:layout_width="fill_parent"
            android:layout_height="wrap_content"

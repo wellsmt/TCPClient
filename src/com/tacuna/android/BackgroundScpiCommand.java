@@ -9,6 +9,7 @@ import android.util.Log;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.scpi.Command;
 import com.tacuna.common.devices.scpi.ScpiMessageExchange;
 

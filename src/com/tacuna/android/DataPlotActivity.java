@@ -1,17 +1,25 @@
 // Copyright 2013 Marc Bernardini.
 package com.tacuna.android;
 
-import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TableLayout;
 
 import com.androidplot.series.XYSeries;
 import com.androidplot.xy.BoundaryMode;
@@ -20,6 +28,7 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 import com.example.tcpclient.R;
 import com.tacuna.android.plot.AnalogChannelToXYSeriesAdapter;
+import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.AnalogInputChannel;
 import com.tacuna.common.devices.ChannelInterface;
 import com.tacuna.common.devices.DeviceInterface;
@@ -31,6 +40,7 @@ import com.tacuna.common.devices.DeviceInterface;
  * 
  */
 public class DataPlotActivity extends AppMenuActivity implements Runnable {
+
     private XYPlot plot;
 
     private final LinkedList<XYSeries> displayedDataSeries = new LinkedList<XYSeries>();
@@ -65,6 +75,12 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	setContentView(R.layout.plot_layout);
 	onCreatePlot();
 
+	Button addChannelBtn = (Button) findViewById(R.id.addChannelBtn);
+	addChannelBtn.setOnClickListener(new AddChannelClickListener());
+
+	Button removeChannelBtn = (Button) findViewById(R.id.removeChannelBtn);
+	removeChannelBtn
+		.setOnClickListener(new ChannelUtilities.ChannelRemoveSelectedClickListener());
     }
 
     @Override
@@ -74,21 +90,21 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      */
     public void onResume() {
 	super.onResume();
-	DeviceInterface device = ConnectionManager.INSTANCE.getDevice();
+	DeviceInterface device = ConnectionManager.INSTANCE.getLastDevice();
 	if (device == null) {
 	    return;
 	}
 	int ii = 0;
-	for (ChannelInterface channel : device.getChannels()) {
-	    // TODO: Remove this if block once we have a better way to make
-	    // channels
-	    // active/ not active.
-	    // if (ii == 1 || ii == 2 || ii == 3) {
+
+	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
+	activeChannels.removeAllViews();
+
+	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	for (ChannelInterface channel : activeChannelsList) {
 	    Log.i("DataPlotActivity", "Adding " + channel.getName());
 	    addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
 		    (AnalogInputChannel) channel), ii);
-
-	    // }
+	    addChannel(activeChannels, channel);
 	    ii++;
 	}
 
@@ -106,14 +122,55 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	executor.remove(updater);
     }
 
+    protected void addChannel(TableLayout table, ChannelInterface channel) {
+	table.addView(ChannelUtilities.getChannelRow(getApplicationContext(),
+		channel));
+    }
+
+    protected void redrawTable() {
+	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
+	activeChannels.removeAllViews();
+	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	for (ChannelInterface channel : activeChannelsList) {
+	    addChannel(activeChannels, channel);
+	}
+    }
+
+    class TimeFormat extends Format {
+
+	private final SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3268501563200906015L;
+
+	@Override
+	public StringBuffer format(Object object, StringBuffer buffer,
+		FieldPosition field) {
+	    double timeValue = (Double) object;
+	    Date time = new Date((long) timeValue);
+
+	    return formatter.format(time, buffer, field);
+	}
+
+	@Override
+	public Object parseObject(String string, ParsePosition position) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+
+    }
+
     @SuppressWarnings("deprecation")
     protected void onCreatePlot() {
 	// get handles to our View defined in layout.xml:
 	plot = (XYPlot) findViewById(R.id.chart);
-	plot.setTitle("Data Plot");
+	plot.setPadding(0, 0, 0, 0);
+	plot.setTitle("");
+	plot.setTitleWidget(null);
 
 	// only display whole numbers in domain labels
-	plot.getGraphWidget().setDomainValueFormat(new DecimalFormat("0"));
+	plot.getGraphWidget().setDomainValueFormat(new TimeFormat());
 	Paint bg = new Paint();
 	bg.setColor(Color.BLACK);
 	plot.getGraphWidget().setBackgroundPaint(bg);
@@ -129,7 +186,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	// getInstance and position datasets:
 
 	plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
-	plot.setDomainStepValue(10);
+	plot.setDomainStepValue(11);
 	// thin out domain/range tick labels so they dont overlap each other:
 	plot.setTicksPerDomainLabel(2);
 	plot.setTicksPerRangeLabel(2);
@@ -138,7 +195,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	plot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
 
 	plot.setRangeLabel("V");
-	plot.setDomainLabel("ms");
+	plot.setDomainLabel("Time");
 
     }
 
@@ -200,6 +257,29 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	plot.setDomainBoundaries(now.getTime() - 10000, now.getTime(),
 		BoundaryMode.FIXED);
 	plot.redraw();
+	redrawTable();
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resulCode, Intent data) {
+
+    }
+
+    protected class AddChannelClickListener implements View.OnClickListener {
+
+	ArrayList<Integer> selectedChannels = new ArrayList<Integer>();
+	ArrayList<ChannelInterface> allChannels = new ArrayList<ChannelInterface>();
+
+	public AddChannelClickListener() {
+
+	}
+
+	@Override
+	public void onClick(View view) {
+	    startActivityForResult(new Intent(DataPlotActivity.this,
+		    ChannelSelectActivity.class),
+		    ChannelSelectActivity.PICK_CHANNELS);
+	}
     }
 }

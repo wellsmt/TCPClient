@@ -1,6 +1,7 @@
 // Copyright 2013 Marc Bernardini.
 package com.tacuna.android;
 
+import static com.tacuna.android.ApplicationUtilities.getBroadcastAddress;
 import static com.tacuna.android.ApplicationUtilities.toast;
 
 import java.beans.PropertyChangeEvent;
@@ -16,8 +17,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.tcpclient.R;
@@ -25,6 +24,9 @@ import com.lp.io.DeviceBroadcastMessage;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 import com.lp.io.UdpBroadcast;
+import com.tacuna.common.components.ConnectionManager;
+import com.tacuna.common.devices.DeviceFactory;
+import com.tacuna.common.devices.DeviceInterface;
 
 /**
  * This activity is used to manage device connections.
@@ -37,10 +39,6 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 
     private final static String TAG = "DEVICE_CONNECTIONS_ACTIVITY";
 
-    private EditText ipAddressInput;
-    private EditText portInput;
-    private Button connect;
-    private BackgroundConnectionTask connectionTask;
     private Context context;
     private ListView deviceList;
 
@@ -56,6 +54,14 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.devices_layout);
 	context = getApplicationContext();
+
+	try {
+	    ConnectionManager.INSTANCE
+		    .setBroadcastAddress(getBroadcastAddress(context));
+	} catch (IOException e) {
+	    Log.e(TAG, "Unable to get network broadcast address.", e);
+	}
+
 	listAdapter = new ConnectedDeviceListAdapter(context);
 
 	deviceList = (ListView) findViewById(R.id.device_list);
@@ -114,7 +120,7 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 	protected String doInBackground(String... params) {
 	    try {
 		UdpBroadcast broadcaster = ConnectionManager.INSTANCE
-			.getBroadcaster(context);
+			.getBroadcaster();
 		Log.i(TAG, "Sending " + params[0]
 			+ " to the UDP broadcast socket.");
 		broadcaster.send(params[0]);
@@ -132,7 +138,7 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
     public class BackgroundDiscovery implements MessageConsumer, Runnable {
 	private static final String TAG = "BACKGROUND_DISCOVERY";
 
-	private List<DeviceConnectionInformation> queue;
+	private List<DeviceInterface> queue;
 	private UdpBroadcast broadcaster;
 	private Activity view;
 
@@ -140,9 +146,8 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 	    try {
 		view = activity;
 		queue = Collections
-			.synchronizedList(new ArrayList<DeviceConnectionInformation>());
-		broadcaster = ConnectionManager.INSTANCE
-			.getBroadcaster(context);
+			.synchronizedList(new ArrayList<DeviceInterface>());
+		broadcaster = ConnectionManager.INSTANCE.getBroadcaster();
 		broadcaster.registerObserver(this);
 	    } catch (IOException err) {
 		Log.e(TAG, "Error connection to UDP broadcast socket.", err);
@@ -151,9 +156,9 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 
 	@Override
 	public void onMessage(Message message) {
-	    DeviceBroadcastMessage msg = (DeviceBroadcastMessage) message;
-	    queue.add(new DeviceConnectionInformation(msg.getHost(), msg
-		    .getTcpPort(), msg.getMacAddress(), msg.getDeviceName()));
+	    DeviceInterface device = DeviceFactory
+		    .getDevice((DeviceBroadcastMessage) message);
+	    queue.add(device);
 	    view.runOnUiThread(this);
 	}
 
