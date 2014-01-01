@@ -9,7 +9,7 @@ import android.util.Log;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 import com.lp.io.SimpleDeviceMessage;
-import com.tacuna.common.components.ConnectionManager;
+import com.tacuna.common.devices.DeviceInterface;
 import com.tacuna.common.devices.scpi.Command;
 import com.tacuna.common.devices.scpi.ScpiMessageExchange;
 
@@ -22,10 +22,9 @@ public class BackgroundScpiCommand extends
     protected ArrayBlockingQueue<SimpleDeviceMessage> result;
     protected ScpiMessageExchange exchange;
 
-    BackgroundScpiCommand() {
+    public BackgroundScpiCommand(DeviceInterface dev) {
 	result = new ArrayBlockingQueue<SimpleDeviceMessage>(1);
-	exchange = (ScpiMessageExchange) ConnectionManager.INSTANCE
-		.getConnectionMessageProducer();
+	exchange = dev.getEx();
 	exchange.registerObserver(this);
     }
 

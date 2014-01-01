@@ -1,6 +1,7 @@
 package com.tacuna.android;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,7 +11,6 @@ import android.support.v4.app.FragmentActivity;
 import com.example.tcpclient.R;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.ChannelInterface;
-import com.tacuna.common.devices.DeviceInterface;
 
 /**
  * The ChannelSelect activity is a FragmentActivity that pops up an alert dialog
@@ -43,29 +43,34 @@ public class ChannelSelectActivity extends FragmentActivity {
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	builder.setTitle("Avaliable Channels");
 
-	DeviceInterface device = ConnectionManager.INSTANCE.getLastDevice();
-	CharSequence[] channelItems = new CharSequence[8];
-	int index = 0;
-	for (ChannelInterface channel : device.getChannels()) {
-	    channelItems[index++] = channel.getDevice().getDeviceName() + " "
-		    + channel.getName();
-	    allChannels.add(channel);
-	}
+	Collection<ChannelInterface> channels = ConnectionManager.INSTANCE
+		.getNonActiveChannels();
+	if (channels.size() == 0) {
+	    builder.setMessage("No channels available. Try connecting to a Wifi DAQ first.");
+	} else {
+	    CharSequence[] channelItems = new CharSequence[channels.size()];
+	    int index = 0;
+	    for (ChannelInterface channel : channels) {
+		channelItems[index++] = channel.getDevice().getDeviceName()
+			+ " " + channel.getName();
+		allChannels.add(channel);
+	    }
 
-	builder.setMultiChoiceItems(channelItems, null,
-		new DialogInterface.OnMultiChoiceClickListener() {
-		    @Override
-		    public void onClick(DialogInterface dialog, int which,
-			    boolean isChecked) {
-			if (isChecked) {
-			    selectedChannels.add(which);
-			} else if (selectedChannels.contains(which)) {
-			    // Using Integer.valueOf here to avoid removing
-			    // indexes and instead removing values
-			    selectedChannels.remove(Integer.valueOf(which));
+	    builder.setMultiChoiceItems(channelItems, null,
+		    new DialogInterface.OnMultiChoiceClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which,
+				boolean isChecked) {
+			    if (isChecked) {
+				selectedChannels.add(which);
+			    } else if (selectedChannels.contains(which)) {
+				// Using Integer.valueOf here to avoid removing
+				// indexes and instead removing values
+				selectedChannels.remove(Integer.valueOf(which));
+			    }
 			}
-		    }
-		});
+		    });
+	}
 
 	builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 	    @Override

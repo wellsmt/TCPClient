@@ -55,7 +55,7 @@ public class ChannelUtilities {
     }
 
     public static TableRow getChannelRow(Context context,
-	    ChannelInterface channel) {
+	    ChannelInterface channel, int channelColor, int channelBgColor) {
 	TableRow tr = new TableRow(context);
 	tr.setClickable(true);
 	tr.setOnClickListener(new ChannelRowClickListener(channel));
@@ -65,6 +65,7 @@ public class ChannelUtilities {
 
 	// Channel label:
 	TextView label = new TextView(context);
+	label.setBackgroundColor(channelBgColor);
 	label.setText(channel.getName());
 	label.setPadding(5, 0, 5, 5);
 	tr.addView(label);

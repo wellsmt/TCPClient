@@ -32,7 +32,6 @@ import com.tacuna.android.plot.AnalogChannelToXYSeriesAdapter;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.AnalogInputChannel;
 import com.tacuna.common.devices.ChannelInterface;
-import com.tacuna.common.devices.DeviceInterface;
 
 /**
  * An activity for all of the charting.
@@ -91,10 +90,6 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      */
     public void onResume() {
 	super.onResume();
-	DeviceInterface device = ConnectionManager.INSTANCE.getLastDevice();
-	if (device == null) {
-	    return;
-	}
 	int ii = 0;
 
 	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
@@ -105,7 +100,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    Log.i("DataPlotActivity", "Adding " + channel.getName());
 	    addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
 		    (AnalogInputChannel) channel), ii);
-	    addChannel(activeChannels, channel);
+	    addChannel(activeChannels, channel, ii);
 	    ii++;
 	}
 
@@ -123,17 +118,20 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	executor.remove(updater);
     }
 
-    protected void addChannel(TableLayout table, ChannelInterface channel) {
+    protected void addChannel(TableLayout table, ChannelInterface channel,
+	    int index) {
 	table.addView(ChannelUtilities.getChannelRow(getApplicationContext(),
-		channel));
+		channel, linePointColors[index % 5][0],
+		linePointColors[index % 5][1]));
     }
 
     protected void redrawTable() {
 	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
 	activeChannels.removeAllViews();
 	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	int ii = 0;
 	for (ChannelInterface channel : activeChannelsList) {
-	    addChannel(activeChannels, channel);
+	    addChannel(activeChannels, channel, ii++);
 	}
     }
 

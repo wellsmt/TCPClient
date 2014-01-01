@@ -8,22 +8,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.tcpclient.R;
-import com.lp.io.SimpleDeviceMessage;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.DeviceCommandSchedule;
 import com.tacuna.common.devices.DeviceInterface;
@@ -145,104 +139,11 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
 		    device));
 	    deviceLogToggle.setEnabled(isConnected);
-	    // if (isConnected) {
-	    // addInputChannels(convertView, device);
-	    // }
 	}
 
 	// this method must return the view corresponding to the data at the
 	// specified position.
 	return convertView;
-    }
-
-    protected void addInputChannels(View convertView, DeviceInterface device) {
-	int NUMBER_OF_AI_CHANNELS = device.getNumberOfAnalogInChannels();
-	TableLayout table = (TableLayout) convertView
-		.findViewById(R.id.channelTable);
-	table.removeAllViews();
-	for (int channel = 0; channel < NUMBER_OF_AI_CHANNELS; channel++) {
-	    TableRow tr = new TableRow(context);
-	    // tr.setId(channel + 100);
-	    // tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
-
-	    // Channel label:
-	    TextView label = new TextView(context);
-	    // label.setId(channel + 200);
-	    label.setText("AI" + channel);
-	    label.setPadding(5, 0, 5, 5);
-	    // label.setLayoutParams(new
-	    // LayoutParams(LayoutParams.WRAP_CONTENT));
-	    tr.addView(label);
-
-	    TextView measuredValue = new TextView(context);
-	    // measuredValue.setId(channel + 300);
-	    measuredValue.setText("+0.0000");
-	    measuredValue.setTextSize(20);
-	    measuredValue.setTextColor(Color.BLACK);
-	    measuredValue.setPadding(10, 5, 5, 5);
-	    tr.addView(measuredValue);
-
-	    Button measureBtn = new Button(context);
-	    // measureBtn.setId(channel + 400);
-
-	    measureBtn.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-	    measureBtn.setText("Measure");
-	    measureBtn.setOnClickListener(new MeasureValue(measuredValue,
-		    new Command("MEASure:EXT:ADC?", channel)));
-	    tr.addView(measureBtn);
-
-	    ToggleButton toggleAm = new ToggleButton(context);
-	    // toggleAm.setId(channel + 440);
-	    // toggleAm.setGravity(Gravity.CENTER_HORIZONTAL
-	    // | Gravity.FILL_VERTICAL);
-	    toggleAm.setText("Off");
-	    toggleAm.setTextOn("On");
-	    toggleAm.setTextOff("Off");
-	    toggleAm.setOnClickListener(new AutoMeasureValue(measureBtn,
-		    toggleAm, new Command("MEASure:EXT:ADC?", channel), device));
-	    tr.addView(toggleAm);
-
-	    table.addView(tr);
-	}
-
-	int NUMBER_OF_DI_CHANNELS = device.getNumberOfDigitalInChannels();
-	for (int channel = 0; channel <= NUMBER_OF_DI_CHANNELS; channel++) {
-	    TableRow tr = new TableRow(context);
-	    tr.setId(channel + 500);
-	    // tr.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT));
-
-	    // Channel label:
-	    TextView label = new TextView(context);
-	    label.setId(channel + 600);
-	    label.setText("DI" + channel);
-	    label.setPadding(5, 0, 5, 5);
-	    // label.setLayoutParams(new
-	    // LayoutParams(LayoutParams.WRAP_CONTENT));
-	    tr.addView(label);
-
-	    TextView measuredValue = new TextView(context);
-	    measuredValue.setId(channel + 700);
-	    measuredValue.setText("0");
-	    measuredValue.setTextSize(20);
-	    measuredValue.setTextColor(Color.BLACK);
-	    measuredValue.setPadding(10, 5, 5, 5);
-	    // measuredValue.setLayoutParams(new
-	    // LayoutParams(LayoutParams.WRAP_CONTENT));
-	    tr.addView(measuredValue);
-
-	    Button measureBtn = new Button(context);
-	    measureBtn.setId(channel + 800);
-
-	    // measureBtn.setLayoutParams(new
-	    // LayoutParams(LayoutParams.WRAP_CONTENT));
-	    measureBtn.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-	    measureBtn.setText("Measure");
-	    measureBtn.setOnClickListener(new MeasureValue(measuredValue,
-		    new Command("INPut:PORt:STATe?", channel)));
-	    tr.addView(measureBtn);
-
-	    table.addView(tr);
-	}
     }
 
     protected class AutoMeasureValue implements View.OnClickListener {
@@ -279,71 +180,6 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		measureButton.setEnabled(true);
 		schedule.remove(command);
 	    }
-	}
-    }
-
-    /**
-     * OnClick Listener used to handle button clicks that make a SCPI command
-     * and set the result to a TextView.
-     * 
-     * @author marc
-     * 
-     */
-    protected class MeasureValue implements View.OnClickListener {
-
-	/**
-	 * Measure SCPI command extends the background SCPI command class and is
-	 * used to update the view with the results from executing the SCPI
-	 * command.
-	 * 
-	 * @author marc
-	 * 
-	 */
-	protected class MeasureScpiCommand extends BackgroundScpiCommand {
-	    private final TextView text;
-
-	    public MeasureScpiCommand(TextView text, View enableOnComplete) {
-		super();
-		this.text = text;
-	    }
-
-	    @Override
-	    /**
-	     * Overriden to set the text of the TextView with the response from
-	     *   the SCPI command.
-	     */
-	    protected void onPostExecute(SimpleDeviceMessage result) {
-		super.onPostExecute(result);
-		text.setText(result.getData());
-	    }
-	}
-
-	public MeasureValue(TextView text, Command command) {
-	    super();
-	    this.text = text;
-	    this.command = command;
-	}
-
-	private final TextView text;
-	private final Command command;
-	MeasureScpiCommand async;
-
-	@Override
-	/**
-	 * The onClick method has been overridden to send
-	 *  a SCPI command to the device.
-	 * @param view
-	 */
-	public void onClick(View v) {
-	    if (isNotRunning()) {
-		async = new MeasureScpiCommand(text, v);
-		async.execute(command);
-	    }
-	}
-
-	protected Boolean isNotRunning() {
-	    return async == null
-		    || async.getStatus() != AsyncTask.Status.RUNNING;
 	}
     }
 

@@ -68,14 +68,15 @@ public class DeviceConnectionsActivity extends AppMenuActivity implements
 	deviceList.setAdapter(listAdapter);
 
 	discovery = new BackgroundDiscovery(this);
-	send = new BackgroundSend();
-	send.execute(HELLO);
     }
 
     @Override
     public void onResume() {
 	super.onResume();
 	ConnectionManager.INSTANCE.addChangeListener(this);
+
+	send = new BackgroundSend();
+	send.execute(HELLO);
     }
 
     @Override
