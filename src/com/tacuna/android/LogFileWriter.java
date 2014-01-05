@@ -11,12 +11,51 @@ import android.util.Log;
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 import com.lp.io.SimpleDeviceMessage;
+import com.tacuna.common.devices.ChannelInterface;
 
 /**
  * The log file writer class is a message consumer that writes all of the
  * messages received to a log file.
  */
 public class LogFileWriter implements MessageConsumer {
+
+    public static class StorageNotAvailable extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7014355808227973141L;
+
+	/**
+	 * 
+	 */
+	public StorageNotAvailable() {
+	    super();
+	}
+
+	/**
+	 * @param detailMessage
+	 * @param throwable
+	 */
+	public StorageNotAvailable(String detailMessage, Throwable throwable) {
+	    super(detailMessage, throwable);
+	}
+
+	/**
+	 * @param detailMessage
+	 */
+	public StorageNotAvailable(String detailMessage) {
+	    super(detailMessage);
+	}
+
+	/**
+	 * @param throwable
+	 */
+	public StorageNotAvailable(Throwable throwable) {
+	    super(throwable);
+	}
+    }
+
     public static final String TAG = "LOG FILE WRITER";
 
     String extension;
@@ -42,7 +81,8 @@ public class LogFileWriter implements MessageConsumer {
      * @param filename
      * @throws IOException
      */
-    public void startNewFile(String filename) throws IOException {
+    public void startNewFile(String filename) throws IOException,
+	    StorageNotAvailable {
 	if (buf != null) {
 	    buf.close();
 	}
@@ -58,7 +98,8 @@ public class LogFileWriter implements MessageConsumer {
 	    }
 	    buf = new BufferedWriter(new FileWriter(data, true));
 	} else {
-	    Log.e(TAG, "External Device is not writable.");
+	    Log.e(TAG, "External storage is not writable.");
+	    throw new StorageNotAvailable("External storage is not writable.");
 	}
     }
 
@@ -81,8 +122,10 @@ public class LogFileWriter implements MessageConsumer {
 	}
 	try {
 	    SimpleDeviceMessage msg = (SimpleDeviceMessage) message;
-	    buf.append(msg.getTimestamp() + "," + msg.getChannel() + ","
-		    + msg.getValue());
+	    ChannelInterface channel = msg.getChannel();
+	    String line = String.format("%d,%s,%f", msg.getTimestamp(),
+		    channel.getName(), msg.getValue());
+	    buf.append(line);
 	    buf.newLine();
 	    buf.flush();
 	} catch (IOException err) {

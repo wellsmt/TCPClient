@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.os.Environment;
-import android.util.Log;
 
 import com.lp.io.MessageProducer;
+import com.tacuna.android.LogFileWriter.StorageNotAvailable;
 import com.tacuna.common.devices.DeviceInterface;
 
 public class DeviceChannelLogger {
@@ -35,7 +35,7 @@ public class DeviceChannelLogger {
     /**
      * Starts the logging.
      */
-    public void startLogging() {
+    public void startLogging() throws StorageNotAvailable, IOException {
 
 	// Create and register the log file writer
 	fileWriter = new LogFileWriter(extension, dir);
@@ -43,17 +43,13 @@ public class DeviceChannelLogger {
 	String datetime = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss")
 		.format(new Date(System.currentTimeMillis()));
 	String filename = device.getDeviceType() + "_" + datetime;
-	try {
-	    fileWriter.startNewFile(filename);
-	    MessageProducer producer = device.getEx();
-	    if (null != producer) {
-		producer.registerObserver(fileWriter);
-	    }
-	} catch (IOException err) {
-	    Log.e(LogFileWriter.TAG,
-		    "Could not open log file. No data log will be created.",
-		    err);
+
+	fileWriter.startNewFile(filename);
+	MessageProducer producer = device.getEx();
+	if (null != producer) {
+	    producer.registerObserver(fileWriter);
 	}
+
     }
 
     /**

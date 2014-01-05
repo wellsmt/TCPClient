@@ -138,7 +138,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		    .findViewById(R.id.device_log_data_toggle);
 	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
 		    device));
-	    deviceLogToggle.setEnabled(isConnected);
+	    // deviceLogToggle.setEnabled(isConnected);
 	}
 
 	// this method must return the view corresponding to the data at the

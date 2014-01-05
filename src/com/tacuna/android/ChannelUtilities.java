@@ -57,6 +57,7 @@ public class ChannelUtilities {
     public static TableRow getChannelRow(Context context,
 	    ChannelInterface channel, int channelColor, int channelBgColor) {
 	TableRow tr = new TableRow(context);
+	tr.setPadding(5, 2, 5, 2);
 	tr.setClickable(true);
 	tr.setOnClickListener(new ChannelRowClickListener(channel));
 	if (selected.contains(channel)) {
