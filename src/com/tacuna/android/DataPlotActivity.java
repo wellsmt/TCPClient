@@ -78,6 +78,9 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	Button addChannelBtn = (Button) findViewById(R.id.addChannelBtn);
 	addChannelBtn.setOnClickListener(new AddChannelClickListener());
 
+	Button cfgChannel = (Button) findViewById(R.id.configureChannelBtn);
+	cfgChannel.setOnClickListener(new ConfigureChannelClickListener());
+
 	Button removeChannelBtn = (Button) findViewById(R.id.removeChannelBtn);
 	removeChannelBtn
 		.setOnClickListener(new ChannelUtilities.ChannelRemoveSelectedClickListener());
@@ -307,6 +310,30 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    startActivityForResult(new Intent(DataPlotActivity.this,
 		    ChannelSelectActivity.class),
 		    ChannelSelectActivity.PICK_ANALOG_CHANNELS);
+	}
+    }
+
+    /**
+     * OnClickListener for the AddChannel button.
+     * 
+     * @author Marc
+     * 
+     */
+    protected class ConfigureChannelClickListener implements
+	    View.OnClickListener {
+
+	ArrayList<Integer> selectedChannels = new ArrayList<Integer>();
+	ArrayList<ChannelInterface> allChannels = new ArrayList<ChannelInterface>();
+
+	public ConfigureChannelClickListener() {
+
+	}
+
+	@Override
+	public void onClick(View view) {
+	    startActivityForResult(new Intent(DataPlotActivity.this,
+		    ChannelConfigureActivity.class),
+		    ChannelConfigureActivity.CONFIG_ANALOG_IN_CHANNEL);
 	}
     }
 }

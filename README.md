@@ -19,6 +19,13 @@ Android TCP Client. Uses SCPI commands to send and receive data.
    * Marc Bernardini
    
 
+## TODO List
+   * Implement protobuf streaming. Here are the stream commands:
+     * [3/17/14, 9:29:50 PM] Tyler Kron: system:startstreamdata
+     * [3/17/14, 9:29:57 PM] Tyler Kron: system:stopstreamdata
+   * Implement a developer console to display throughput and error counts
+
+
 ## Acceptance Tests
 ### Devices Tab
    * Load the Wifi DAQ application using Eclipse

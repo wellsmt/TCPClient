@@ -18,14 +18,13 @@
            android:layout_height="wrap_content"
            android:drawableLeft="@drawable/ic_action_new"
            android:gravity="left|center_vertical"
-           android:text="Add Channel" />
+           android:text="Add" />
        <Button
            android:id="@+id/configureChannelBtn"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:drawableLeft="@drawable/ic_action_edit"
            android:gravity="left|center_vertical"
-           android:enabled="false"
            android:text="Configure" />
        <Button
            android:id="@+id/removeChannelBtn"

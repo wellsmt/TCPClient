@@ -28,7 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
          
         <!--  Devices Activity -->
         <activity android:name="com.tacuna.android.DeviceConnectionsActivity" />
@@ -39,11 +38,10 @@
         <!--  Data Plot Activity -->
         <activity android:name="com.tacuna.android.DataPlotActivity" />
         
-        <!--  Schematic View Activity -->
-        <activity android:name="com.tacuna.android.SchematicViewActivity" />
+        <activity android:name="com.tacuna.android.ChannelSelectActivity" />
         
-        <!--  Schematic View Activity -->
-        <activity android:name="com.tacuna.android.ComponentOptionsActivity" />
+        <activity android:name="com.tacuna.android.ChannelConfigureActivity" />
+        
     </application>
 
 </manifest>

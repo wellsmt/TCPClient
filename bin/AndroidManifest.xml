@@ -28,7 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
          
         <!--  Devices Activity -->
         <activity android:name="com.tacuna.android.DeviceConnectionsActivity" />
@@ -39,10 +38,10 @@
         <!--  Data Plot Activity -->
         <activity android:name="com.tacuna.android.DataPlotActivity" />
         
-   <activity
-            android:name="com.tacuna.android.ChannelSelectActivity"
-            android:theme="@style/Theme.Transparent" >
-        </activity>
+        <activity android:name="com.tacuna.android.ChannelSelectActivity" />
+        
+        <activity android:name="com.tacuna.android.ChannelConfigureActivity" />
+        
     </application>
 
 </manifest>
