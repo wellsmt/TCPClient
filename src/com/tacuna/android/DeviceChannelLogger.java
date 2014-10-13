@@ -45,7 +45,7 @@ public class DeviceChannelLogger {
 	String filename = device.getDeviceType() + "_" + datetime;
 
 	fileWriter.startNewFile(filename);
-	MessageProducer producer = device.getEx();
+	MessageProducer producer = device;
 	if (null != producer) {
 	    producer.registerObserver(fileWriter);
 	}
@@ -58,7 +58,7 @@ public class DeviceChannelLogger {
      * TODO: This needs to do some file clean up.
      */
     public void stopLogging() {
-	MessageProducer producer = device.getEx();
+	MessageProducer producer = device;
 	if (null != producer && null != fileWriter) {
 	    producer.removeObserver(fileWriter);
 	}

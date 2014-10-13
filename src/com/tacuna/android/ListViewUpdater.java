@@ -38,7 +38,7 @@ public class ListViewUpdater implements MessageConsumer, Runnable {
 	// Pass the messages to the UI thread for display.
 	// The messagesToDisplay list is synchronized so
 	// that this is thread safe.
-	messagesToDisplay.add(message.getData());
+	messagesToDisplay.add(message.getData().toString());
 	activity.runOnUiThread(this);
     }
 
