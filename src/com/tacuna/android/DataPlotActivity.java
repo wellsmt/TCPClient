@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.androidplot.series.XYSeries;
 import com.androidplot.xy.BoundaryMode;
@@ -30,6 +31,8 @@ import com.androidplot.xy.XYStepMode;
 import com.example.tcpclient.R;
 import com.tacuna.android.plot.AnalogChannelToXYSeriesAdapter;
 import com.tacuna.common.components.ConnectionManager;
+import com.tacuna.common.components.MovingAverage;
+import com.tacuna.common.devices.AD7195W;
 import com.tacuna.common.devices.AnalogInputChannel;
 import com.tacuna.common.devices.ChannelInterface;
 
@@ -84,6 +87,13 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	Button removeChannelBtn = (Button) findViewById(R.id.removeChannelBtn);
 	removeChannelBtn
 		.setOnClickListener(new ChannelUtilities.ChannelRemoveSelectedClickListener());
+
+	Button startChannel = (Button) findViewById(R.id.startBtn);
+	startChannel.setOnClickListener(new StartStream());
+
+	Button stopChannel = (Button) findViewById(R.id.stopBtn);
+	stopChannel.setOnClickListener(new StopStream());
+
     }
 
     @Override
@@ -107,7 +117,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    ii++;
 	}
 
-	executor.scheduleWithFixedDelay(updater, 1, 1000, TimeUnit.MILLISECONDS);
+	executor.scheduleWithFixedDelay(updater, 1, 250, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -128,6 +138,10 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 		linePointColors[index % 5][1]));
     }
 
+    private long lastTime = 0;
+    private long lastNumSamples = 0;
+    private final MovingAverage freqAvg = new MovingAverage(5);
+
     protected void redrawTable() {
 	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
 	activeChannels.removeAllViews();
@@ -135,6 +149,25 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	int ii = 0;
 	for (ChannelInterface channel : activeChannelsList) {
 	    addChannel(activeChannels, channel, ii++);
+	}
+
+	if (activeChannelsList.size() > 0) {
+	    AD7195W device = (AD7195W) activeChannelsList.get(0).getDevice();
+	    TextView samples = (TextView) findViewById(R.id.numberOfSamples);
+	    samples.setText(String.format("Number of samples: %d\t",
+		    device.getTotalMessageCount()));
+
+	    TextView sampleFreq = (TextView) findViewById(R.id.sampleFreq);
+	    long now = new Date().getTime();
+	    if (lastTime > 0) {
+		float deltaTime = (now - lastTime) / 1000.0f;
+		float freq = ((device.getTotalMessageCount() - lastNumSamples) / deltaTime);
+		freqAvg.add(freq);
+		sampleFreq.setText(String.format("Sample Frequency (Hz): %f\t",
+			freqAvg.getAverage()));
+	    }
+	    lastTime = now;
+	    lastNumSamples = device.getTotalMessageCount();
 	}
     }
 
@@ -264,25 +297,30 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      * Run method used to update the DataPlotActivity.
      */
     public void run() {
-	// Get the min and max value to display using the active channels
-	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
-	float max = Float.MIN_VALUE;
-	float min = Float.MAX_VALUE;
+	try {
+	    // Get the min and max value to display using the active channels
+	    ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	    float max = Float.MIN_VALUE;
+	    float min = Float.MAX_VALUE;
 
-	for (ChannelInterface channel : activeChannelsList) {
-	    float channelMax = channel.getMaximum();
-	    max = (channelMax > max) ? channelMax : max;
-	    float channelMin = channel.getMinimum();
-	    min = (channelMin < min) ? channelMin : min;
+	    for (ChannelInterface channel : activeChannelsList) {
+		float channelMax = channel.getMaximum();
+		max = (channelMax > max) ? channelMax : max;
+		float channelMin = channel.getMinimum();
+		min = (channelMin < min) ? channelMin : min;
+	    }
+
+	    // plot.setRangeBoundaries(min - 0.5, max + 0.5,
+	    // BoundaryMode.FIXED);
+	    // Date now = new Date();
+	    // plot.setDomainBoundaries(now.getTime() - 1000, now.getTime(),
+	    // BoundaryMode.FIXED);
+	    // plot.redraw();
+	    redrawTable();
+
+	} catch (Exception err) {
+	    Log.e("DATA_PLOT", "Error during redraw", err);
 	}
-
-	plot.setRangeBoundaries(min - 0.5, max + 0.5, BoundaryMode.FIXED);
-	Date now = new Date();
-	plot.setDomainBoundaries(now.getTime() - 60000, now.getTime(),
-		BoundaryMode.FIXED);
-	plot.redraw();
-	redrawTable();
-
     }
 
     @Override
@@ -335,5 +373,39 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 		    ChannelConfigureActivity.class),
 		    ChannelConfigureActivity.CONFIG_ANALOG_IN_CHANNEL);
 	}
+    }
+
+    protected class StartStream implements View.OnClickListener {
+
+	public StartStream() {
+
+	}
+
+	@Override
+	public void onClick(View v) {
+	    ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	    if (activeChannelsList.size() > 0) {
+		AD7195W dev = (AD7195W) activeChannelsList.get(0).getDevice();
+		dev.startStreaming();
+	    }
+	}
+
+    }
+
+    protected class StopStream implements View.OnClickListener {
+
+	public StopStream() {
+
+	}
+
+	@Override
+	public void onClick(View v) {
+	    ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
+	    if (activeChannelsList.size() > 0) {
+		AD7195W dev = (AD7195W) activeChannelsList.get(0).getDevice();
+		dev.stopStreaming();
+	    }
+	}
+
     }
 }

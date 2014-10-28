@@ -10,8 +10,7 @@ import android.util.Log;
 
 import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
-import com.lp.io.SimpleDeviceMessage;
-import com.tacuna.common.devices.ChannelInterface;
+import com.lp.io.SimpleProtobufMessage;
 
 /**
  * The log file writer class is a message consumer that writes all of the
@@ -121,11 +120,9 @@ public class LogFileWriter implements MessageConsumer {
 	    return;
 	}
 	try {
-	    SimpleDeviceMessage msg = (SimpleDeviceMessage) message;
-	    ChannelInterface channel = msg.getChannel();
-	    String line = String.format("%d,%s,%f", msg.getTimestamp(),
-		    channel.getName(), msg.getValue());
-	    buf.append(line);
+	    SimpleProtobufMessage msg = (SimpleProtobufMessage) message;
+
+	    buf.append(msg.toCsvString());
 	    buf.newLine();
 	    buf.flush();
 	} catch (IOException err) {
