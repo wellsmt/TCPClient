@@ -24,16 +24,12 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.androidplot.series.XYSeries;
-import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYStepMode;
 import com.example.tcpclient.R;
-import com.tacuna.android.plot.AnalogChannelToXYSeriesAdapter;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.components.MovingAverage;
 import com.tacuna.common.devices.AD7195W;
-import com.tacuna.common.devices.AnalogInputChannel;
 import com.tacuna.common.devices.ChannelInterface;
 
 /**
@@ -76,7 +72,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.plot_layout);
-	onCreatePlot();
+	// onCreatePlot();
 
 	Button addChannelBtn = (Button) findViewById(R.id.addChannelBtn);
 	addChannelBtn.setOnClickListener(new AddChannelClickListener());
@@ -111,8 +107,8 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
 	for (ChannelInterface channel : activeChannelsList) {
 	    Log.i("DataPlotActivity", "Adding " + channel.getName());
-	    addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
-		    (AnalogInputChannel) channel), ii);
+	    // addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
+	    // (AnalogInputChannel) channel), ii);
 	    addChannel(activeChannels, channel, ii);
 	    ii++;
 	}
@@ -124,9 +120,9 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
     public void onPause() {
 	super.onPause();
 
-	for (XYSeries ser : displayedDataSeries) {
-	    plot.removeSeries(ser);
-	}
+	// for (XYSeries ser : displayedDataSeries) {
+	// plot.removeSeries(ser);
+	// }
 
 	executor.remove(updater);
     }
@@ -206,43 +202,43 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 
     }
 
-    @SuppressWarnings("deprecation")
-    protected void onCreatePlot() {
-	// get handles to our View defined in layout.xml:
-	plot = (XYPlot) findViewById(R.id.chart);
-	plot.setPadding(0, 0, 0, 0);
-	plot.setTitle("");
-	plot.setTitleWidget(null);
-
-	// only display whole numbers in domain labels
-	plot.getGraphWidget().setDomainValueFormat(new TimeFormat());
-	Paint bg = new Paint();
-	bg.setColor(Color.BLACK);
-	plot.getGraphWidget().setBackgroundPaint(bg);
-	Paint plotBg = new Paint();
-	plotBg.setColor(Color.rgb(0, 26, 0));
-	plot.getGraphWidget().setGridBackgroundPaint(plotBg);
-
-	plot.getBackgroundPaint().setColor(Color.BLACK);
-	plot.getBorderPaint().setStrokeWidth(1);
-	Paint gridPaint = new Paint();
-	gridPaint.setColor(Color.rgb(0, 102, 0));
-	plot.getGraphWidget().setGridLinePaint(gridPaint);
-	// getInstance and position datasets:
-
-	plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
-	plot.setDomainStepValue(11);
-	// thin out domain/range tick labels so they dont overlap each other:
-	plot.setTicksPerDomainLabel(2);
-	plot.setTicksPerRangeLabel(2);
-	plot.disableAllMarkup();
-	// freeze the range boundaries:
-	plot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
-
-	plot.setRangeLabel("V");
-	plot.setDomainLabel("Time");
-
-    }
+    // @SuppressWarnings("deprecation")
+    // protected void onCreatePlot() {
+    // // get handles to our View defined in layout.xml:
+    // plot = (XYPlot) findViewById(R.id.chart);
+    // plot.setPadding(0, 0, 0, 0);
+    // plot.setTitle("");
+    // plot.setTitleWidget(null);
+    //
+    // // only display whole numbers in domain labels
+    // plot.getGraphWidget().setDomainValueFormat(new TimeFormat());
+    // Paint bg = new Paint();
+    // bg.setColor(Color.BLACK);
+    // plot.getGraphWidget().setBackgroundPaint(bg);
+    // Paint plotBg = new Paint();
+    // plotBg.setColor(Color.rgb(0, 26, 0));
+    // plot.getGraphWidget().setGridBackgroundPaint(plotBg);
+    //
+    // plot.getBackgroundPaint().setColor(Color.BLACK);
+    // plot.getBorderPaint().setStrokeWidth(1);
+    // Paint gridPaint = new Paint();
+    // gridPaint.setColor(Color.rgb(0, 102, 0));
+    // plot.getGraphWidget().setGridLinePaint(gridPaint);
+    // // getInstance and position datasets:
+    //
+    // plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
+    // plot.setDomainStepValue(11);
+    // // thin out domain/range tick labels so they dont overlap each other:
+    // plot.setTicksPerDomainLabel(2);
+    // plot.setTicksPerRangeLabel(2);
+    // plot.disableAllMarkup();
+    // // freeze the range boundaries:
+    // plot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
+    //
+    // plot.setRangeLabel("V");
+    // plot.setDomainLabel("Time");
+    //
+    // }
 
     /**
      * Adds a DataSeries to the XY Plot.

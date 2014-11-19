@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.ChannelInterface;
+import com.tacuna.common.devices.DigitalInputChannel;
 
 public class ChannelUtilities {
 
@@ -72,8 +73,14 @@ public class ChannelUtilities {
 	tr.addView(label);
 
 	TextView measuredValue = new TextView(context);
-	measuredValue.setText(String.format("%f %s", channel.getCurrentValue(),
-		channel.getUnit()));
+	if (channel instanceof DigitalInputChannel) {
+	    measuredValue.setText(String.format("%.0f %s",
+		    channel.getCurrentValue(), channel.getUnit()));
+	} else {
+	    measuredValue.setText(String.format("%f %s",
+		    channel.getCurrentValue(), channel.getUnit()));
+
+	}
 	measuredValue.setTextSize(20);
 	measuredValue.setTextColor(Color.BLACK);
 	measuredValue.setPadding(10, 5, 5, 5);

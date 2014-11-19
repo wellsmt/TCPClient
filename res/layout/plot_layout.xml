@@ -82,8 +82,16 @@
          
    </TableLayout>
        </ScrollView>
-
-   <com.androidplot.xy.XYPlot
+<com.tacuna.android.plot.AnalogDataStream
+          android:id="@+id/chartTwo"
+         android:layout_width="match_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="2"
+         android:layout_marginLeft="0dp"
+         android:layout_marginRight="0dp"
+         android:layout_marginTop="0dp"
+    ></com.tacuna.android.plot.AnalogDataStream>
+<!--   <com.androidplot.xy.XYPlot
         	android:id="@+id/chart"
         	android:layout_width="match_parent"
         	android:layout_height="fill_parent"
@@ -91,6 +99,6 @@
         	android:layout_marginLeft="0dp"
         	android:layout_marginRight="0dp"
         	android:layout_marginTop="0dp"
-        	title="Data Chart" />
+        	title="Data Chart" /> -->
    </LinearLayout>
 </RelativeLayout>
