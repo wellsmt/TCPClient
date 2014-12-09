@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.tacuna.android.plot;
 
 import android.content.Context;
@@ -11,27 +8,22 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-/**
- * @author Marc
- * 
- */
-public class AnalogDataStream extends SurfaceView implements
+public class DigitalDataStream extends SurfaceView implements
 	SurfaceHolder.Callback {
 
-    private DataStreamThread dst;
+    DigitalDataStreamThread dst;
 
-    /**
-     * @param context
-     */
-    public AnalogDataStream(Context context) {
+    public DigitalDataStream(Context context) {
 	super(context);
+
+	getHolder().addCallback(this);
     }
 
     /**
      * @param context
      * @param attrs
      */
-    public AnalogDataStream(Context context, AttributeSet attrs) {
+    public DigitalDataStream(Context context, AttributeSet attrs) {
 	super(context, attrs);
 
 	getHolder().addCallback(this);
@@ -42,7 +34,7 @@ public class AnalogDataStream extends SurfaceView implements
      * @param attrs
      * @param defStyle
      */
-    public AnalogDataStream(Context context, AttributeSet attrs, int defStyle) {
+    public DigitalDataStream(Context context, AttributeSet attrs, int defStyle) {
 	super(context, attrs, defStyle);
 
 	getHolder().addCallback(this);
@@ -51,8 +43,9 @@ public class AnalogDataStream extends SurfaceView implements
     @Override
     public void surfaceChanged(SurfaceHolder sh, int format, int width,
 	    int height) {
-	Log.i("AnalogDataStream", String.format(
+	Log.i("DigitalDataStream", String.format(
 		"Surface changed. Width: %d\tHeight: %d", width, height));
+
 	dst.setSurfaceSize(width, height);
     }
 
@@ -62,7 +55,7 @@ public class AnalogDataStream extends SurfaceView implements
 	canvas.drawColor(Color.BLACK);
 	sh.unlockCanvasAndPost(canvas);
 
-	dst = new AnalogDataStreamThread(sh, getContext());
+	dst = new DigitalDataStreamThread(sh, getContext());
 	dst.setRunning(true);
 	dst.setSurfaceSize(canvas.getWidth(), canvas.getHeight());
 	dst.start();
@@ -80,4 +73,5 @@ public class AnalogDataStream extends SurfaceView implements
 	    }
 	}
     }
+
 }

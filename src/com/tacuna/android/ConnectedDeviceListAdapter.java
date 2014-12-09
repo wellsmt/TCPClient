@@ -13,15 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.tcpclient.R;
 import com.tacuna.common.components.ConnectionManager;
-import com.tacuna.common.devices.DeviceCommandSchedule;
 import com.tacuna.common.devices.DeviceInterface;
-import com.tacuna.common.devices.scpi.Command;
 
 /**
  * This is the list adapter used for updating the Devices List view.
@@ -144,43 +141,6 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	// this method must return the view corresponding to the data at the
 	// specified position.
 	return convertView;
-    }
-
-    protected class AutoMeasureValue implements View.OnClickListener {
-	/**
-	 * @param measureButton
-	 * @param button
-	 * @param command
-	 */
-	public AutoMeasureValue(Button measureButton, ToggleButton button,
-		Command command, DeviceInterface device) {
-	    super();
-	    this.measureButton = measureButton;
-	    this.button = button;
-	    this.command = command;
-	    this.device = device;
-	}
-
-	private final Button measureButton;
-	private final ToggleButton button;
-	private final Command command;
-	private final DeviceInterface device;
-
-	@Override
-	public void onClick(View v) {
-	    boolean selected = button.isChecked();
-	    // DeviceInterface device = ConnectionManagerAndriod.INSTANCE
-	    // .getDevice();
-	    DeviceCommandSchedule schedule = ConnectionManager.INSTANCE
-		    .getScheduleByDeviceName(device.getDeviceName());
-	    if (selected) {
-		measureButton.setEnabled(false);
-		schedule.schedule(command, 1000);
-	    } else {
-		measureButton.setEnabled(true);
-		schedule.remove(command);
-	    }
-	}
     }
 
     public class ToggleConnection implements View.OnClickListener,

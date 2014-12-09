@@ -101,15 +101,16 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	super.onResume();
 	int ii = 0;
 
-	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
-	activeChannels.removeAllViews();
+	// TableLayout activeChannels = (TableLayout)
+	// findViewById(R.id.activeChannels);
+	// activeChannels.removeAllViews();
 
 	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
 	for (ChannelInterface channel : activeChannelsList) {
 	    Log.i("DataPlotActivity", "Adding " + channel.getName());
 	    // addDataSeries(plot, new AnalogChannelToXYSeriesAdapter(
 	    // (AnalogInputChannel) channel), ii);
-	    addChannel(activeChannels, channel, ii);
+	    // addChannel(activeChannels, channel, ii);
 	    ii++;
 	}
 
@@ -136,36 +137,39 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 
     private long lastTime = 0;
     private long lastNumSamples = 0;
-    private final MovingAverage freqAvg = new MovingAverage(5);
+    private final MovingAverage freqAvg = new MovingAverage(10);
 
-    protected void redrawTable() {
-	TableLayout activeChannels = (TableLayout) findViewById(R.id.activeChannels);
-	activeChannels.removeAllViews();
-	ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
-	int ii = 0;
-	for (ChannelInterface channel : activeChannelsList) {
-	    addChannel(activeChannels, channel, ii++);
-	}
-
-	if (activeChannelsList.size() > 0) {
-	    AD7195W device = (AD7195W) activeChannelsList.get(0).getDevice();
-	    TextView samples = (TextView) findViewById(R.id.numberOfSamples);
-	    samples.setText(String.format("Number of samples: %d\t",
-		    device.getTotalMessageCount()));
-
-	    TextView sampleFreq = (TextView) findViewById(R.id.sampleFreq);
-	    long now = new Date().getTime();
-	    if (lastTime > 0) {
-		float deltaTime = (now - lastTime) / 1000.0f;
-		float freq = ((device.getTotalMessageCount() - lastNumSamples) / deltaTime);
-		freqAvg.add(freq);
-		sampleFreq.setText(String.format("Sample Frequency (Hz): %f\t",
-			freqAvg.getAverage()));
-	    }
-	    lastTime = now;
-	    lastNumSamples = device.getTotalMessageCount();
-	}
-    }
+    // protected void redrawTable() {
+    // TableLayout activeChannels = (TableLayout)
+    // findViewById(R.id.activeChannels);
+    // activeChannels.removeAllViews();
+    // ArrayList<ChannelInterface> activeChannelsList =
+    // ConnectionManager.INSTANCE.activeChannelsList;
+    // int ii = 0;
+    // for (ChannelInterface channel : activeChannelsList) {
+    // addChannel(activeChannels, channel, ii++);
+    // }
+    //
+    // if (activeChannelsList.size() > 0) {
+    // AD7195W device = (AD7195W) activeChannelsList.get(0).getDevice();
+    // TextView samples = (TextView) findViewById(R.id.numberOfSamples);
+    // samples.setText(String.format("Number of samples: %d\t",
+    // device.getTotalMessageCount()));
+    //
+    // TextView sampleFreq = (TextView) findViewById(R.id.sampleFreq);
+    // long now = new Date().getTime();
+    // if (lastTime > 0) {
+    // float deltaTime = (now - lastTime) / 1000.0f;
+    // float freq = ((device.getTotalMessageCount() - lastNumSamples) /
+    // deltaTime);
+    // freqAvg.add(freq);
+    // sampleFreq.setText(String.format("Sample Frequency (Hz): %f\t",
+    // freqAvg.getAverage()));
+    // }
+    // lastTime = now;
+    // lastNumSamples = device.getTotalMessageCount();
+    // }
+    // }
 
     @SuppressLint("SimpleDateFormat")
     /**
@@ -312,7 +316,29 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	    // plot.setDomainBoundaries(now.getTime() - 1000, now.getTime(),
 	    // BoundaryMode.FIXED);
 	    // plot.redraw();
-	    redrawTable();
+	    // redrawTable();
+
+	    if (activeChannelsList.size() > 0) {
+		AD7195W device = (AD7195W) activeChannelsList.get(0)
+			.getDevice();
+		TextView samples = (TextView) findViewById(R.id.numberOfSamples);
+		samples.setText(String.format("Number of samples: %d\t",
+			device.getTotalMessageCount()));
+
+		TextView sampleFreq = (TextView) findViewById(R.id.sampleFreq);
+		long now = new Date().getTime();
+		if (lastTime > 0) {
+		    float deltaTime = (now - lastTime) / 1000.0f;
+		    float freq = ((device.getTotalMessageCount() - lastNumSamples) / deltaTime);
+		    freqAvg.add(freq);
+		    sampleFreq
+			    .setText(String.format(
+				    "Sample Frequency (Hz): %f\t",
+				    freqAvg.getAverage()));
+		}
+		lastTime = now;
+		lastNumSamples = device.getTotalMessageCount();
+	    }
 
 	} catch (Exception err) {
 	    Log.e("DATA_PLOT", "Error during redraw", err);
