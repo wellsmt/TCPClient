@@ -87,12 +87,19 @@
 
         </TableLayout>
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/frequencySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     
     <ToggleButton
             android:id="@+id/device_connection_toggle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="" />
+
+
     
     <ToggleButton
            android:id="@+id/device_log_data_toggle"

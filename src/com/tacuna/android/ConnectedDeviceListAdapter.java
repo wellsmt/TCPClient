@@ -12,7 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -136,6 +140,22 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
 		    device));
 	    // deviceLogToggle.setEnabled(isConnected);
+
+	    final Spinner freqSpinner = (Spinner) convertView
+		    .findViewById(R.id.frequencySpinner);
+	    ArrayAdapter<CharSequence> adapter = ArrayAdapter
+		    .createFromResource(this.context,
+			    R.array.sampleFrequencies,
+			    android.R.layout.simple_spinner_item);
+	    // Specify the layout to use when the list of choices appears
+	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    // Apply the adapter to the spinner
+	    freqSpinner.setAdapter(adapter);
+
+	    freqSpinner
+		    .setOnItemSelectedListener(new SetDeviceFrequencyListener(
+			    device));
+
 	}
 
 	// this method must return the view corresponding to the data at the
@@ -181,6 +201,28 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 		}
 	    }
 	}
+    }
 
+    public class SetDeviceFrequencyListener implements OnItemSelectedListener {
+
+	private final DeviceInterface device;
+
+	public SetDeviceFrequencyListener(DeviceInterface device) {
+	    this.device = device;
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int pos,
+		long id) {
+	    int sampleFrequency = Integer.parseInt(parent
+		    .getItemAtPosition(pos).toString());
+	    device.setSampleFrequency(sampleFrequency);
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+	    // TODO: Make this a resource
+	    device.setSampleFrequency(100);
+	}
     }
 }
