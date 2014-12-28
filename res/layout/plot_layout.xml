@@ -19,13 +19,7 @@
            android:drawableLeft="@drawable/ic_action_new"
            android:gravity="left|center_vertical"
            android:text="Add" />
-       <Button
-           android:id="@+id/configureChannelBtn"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:drawableLeft="@drawable/ic_action_edit"
-           android:gravity="left|center_vertical"
-           android:text="Configure" />
+
        <Button
            android:id="@+id/removeChannelBtn"
            android:layout_width="wrap_content"
@@ -49,6 +43,20 @@
            android:drawableLeft="@drawable/ic_action_stop"
            android:gravity="left|center_vertical"
            android:text="Stop" />
+       <Button
+           android:id="@+id/emailDataBtn"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:drawableLeft="@drawable/ic_action_email"
+           android:gravity="left|center_vertical"
+           android:text="Email" />
+        <Button
+           android:id="@+id/uploadToGoogleDriveBtn"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:drawableLeft="@drawable/ic_action_cloud"
+           android:gravity="left|center_vertical"
+           android:text="Upload" />
           <LinearLayout
        android:layout_weight="2"
        android:layout_width="wrap_content"

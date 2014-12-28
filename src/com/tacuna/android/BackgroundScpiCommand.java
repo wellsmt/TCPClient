@@ -6,9 +6,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
-import com.lp.io.SimpleDeviceMessage;
+import com.lp.io.messages.Message;
+import com.lp.io.messages.SimpleDeviceMessage;
 import com.tacuna.common.devices.DeviceInterface;
 import com.tacuna.common.devices.scpi.Command;
 

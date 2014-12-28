@@ -135,12 +135,23 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    deviceConnectionToggle.setOnClickListener(new ToggleConnection(
 		    device, deviceConnectionToggle));
 
-	    final ToggleButton deviceLogToggle = (ToggleButton) convertView
-		    .findViewById(R.id.device_log_data_toggle);
-	    deviceLogToggle.setOnClickListener(new ToggleLogsOnClickListener(
-		    device));
 	    // deviceLogToggle.setEnabled(isConnected);
 
+	    //
+	    // Analog sample resolution:
+	    //
+	    final Spinner voltageSpinner = (Spinner) convertView
+		    .findViewById(R.id.voltageRangeSpinner);
+	    ArrayAdapter<CharSequence> voltageAdapter = ArrayAdapter
+		    .createFromResource(this.context, R.array.voltageRanges,
+			    android.R.layout.simple_spinner_item);
+	    voltageAdapter
+		    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    voltageSpinner.setAdapter(voltageAdapter);
+
+	    //
+	    // Sample Frequency:
+	    //
 	    final Spinner freqSpinner = (Spinner) convertView
 		    .findViewById(R.id.frequencySpinner);
 	    ArrayAdapter<CharSequence> adapter = ArrayAdapter
@@ -151,7 +162,9 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // Apply the adapter to the spinner
 	    freqSpinner.setAdapter(adapter);
-
+	    int frequency = device.getSampleFrequency();
+	    freqSpinner.setSelection(adapter.getPosition(Integer
+		    .toString(frequency)));
 	    freqSpinner
 		    .setOnItemSelectedListener(new SetDeviceFrequencyListener(
 			    device));
@@ -163,6 +176,12 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	return convertView;
     }
 
+    /**
+     * Toggles the device connection.
+     * 
+     * @author Marc
+     * 
+     */
     public class ToggleConnection implements View.OnClickListener,
 	    PropertyChangeListener {
 	private final ToggleButton toggle;
@@ -203,8 +222,15 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	}
     }
 
+    /**
+     * Listener to set the device sample frequency
+     * 
+     * @author Marc
+     * 
+     */
     public class SetDeviceFrequencyListener implements OnItemSelectedListener {
 
+	private static final int DEFAULT_SAMPLE_FREQUENCY = 100;
 	private final DeviceInterface device;
 
 	public SetDeviceFrequencyListener(DeviceInterface device) {
@@ -222,7 +248,7 @@ public class ConnectedDeviceListAdapter extends BaseAdapter {
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 	    // TODO: Make this a resource
-	    device.setSampleFrequency(100);
+	    device.setSampleFrequency(DEFAULT_SAMPLE_FREQUENCY);
 	}
     }
 }

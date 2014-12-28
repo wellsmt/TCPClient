@@ -21,9 +21,9 @@ import android.widget.ListView;
 
 import com.example.tcpclient.R;
 import com.lp.io.DeviceBroadcastMessage;
-import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
 import com.lp.io.UdpBroadcast;
+import com.lp.io.messages.Message;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.devices.DeviceFactory;
 import com.tacuna.common.devices.DeviceInterface;

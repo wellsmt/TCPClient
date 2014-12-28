@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/device_info_row"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="vertical"
@@ -87,27 +87,40 @@
 
         </TableLayout>
     </LinearLayout>
-
+        <TextView
+        android:id="@+id/textVoltageLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Analog Voltage Resolution (V)"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <Spinner
+        android:id="@+id/voltageRangeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/textSampleFrequency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sample Frequency (Hz)"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     <Spinner
         android:id="@+id/frequencySpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textConnection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connection"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     
     <ToggleButton
             android:id="@+id/device_connection_toggle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="" />
-
-
-    
-    <ToggleButton
-           android:id="@+id/device_log_data_toggle"
-           android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
-           android:text="@string/logDataLbl"
-           android:textOn="@string/logDataLbl"
-           android:textOff="@string/logDataLblOff" />
 
     <TableLayout
         android:id="@+id/channelTable"

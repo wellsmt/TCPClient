@@ -13,7 +13,6 @@ public class SqlLiteHelper extends SQLiteOpenHelper {
     }
 
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_COMMENT = "comment";
     public static final String TABLE = "measurements";
     private static final String DATABASE_NAME = "mesurements.db";
     private static final int DATABASE_VERSION = 1;

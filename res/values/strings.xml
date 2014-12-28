@@ -25,15 +25,11 @@
     <string name="hostNameLbl">Host Name</string>
     <string name="macAddrLbl">MAC Address</string>
     
-    <string-array name="sampleRates">
-        <item>0.01</item>
-        <item>0.1</item>
-        <item>1</item>
-        <item>2</item>
-        <item>5</item>
-        <item>10</item>
+
+    <string-array name="voltageRanges">
+        <item>\u00B1 5</item>
+        <item>\u00B1 10</item>
     </string-array>
-    
     <string-array name="sampleFrequencies">
         <item>1</item>
         <item>10</item>

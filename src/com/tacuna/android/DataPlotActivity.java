@@ -1,6 +1,9 @@
 // Copyright 2013 Marc Bernardini.
 package com.tacuna.android;
 
+import static com.tacuna.android.ApplicationUtilities.toast;
+
+import java.io.File;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -27,6 +30,9 @@ import com.androidplot.series.XYSeries;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.XYPlot;
 import com.example.tcpclient.R;
+import com.tacuna.android.data.DatabaseWriteThread;
+import com.tacuna.android.data.MeasurementsDataSource;
+import com.tacuna.android.intents.IntentFactory;
 import com.tacuna.common.components.ConnectionManager;
 import com.tacuna.common.components.MovingAverage;
 import com.tacuna.common.devices.AD7195W;
@@ -41,6 +47,8 @@ import com.tacuna.common.devices.ChannelInterface;
 public class DataPlotActivity extends AppMenuActivity implements Runnable {
 
     private XYPlot plot;
+
+    private DatabaseWriteThread dbThread;
 
     private final LinkedList<XYSeries> displayedDataSeries = new LinkedList<XYSeries>();
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
@@ -66,6 +74,11 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
     private final UiUpdater updater = new UiUpdater(this, this);
 
     @Override
+    public void onDestroy() {
+	super.onDestroy();
+    }
+
+    @Override
     /**
      * On create used to create this activity.
      */
@@ -77,9 +90,6 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	Button addChannelBtn = (Button) findViewById(R.id.addChannelBtn);
 	addChannelBtn.setOnClickListener(new AddChannelClickListener());
 
-	Button cfgChannel = (Button) findViewById(R.id.configureChannelBtn);
-	cfgChannel.setOnClickListener(new ConfigureChannelClickListener());
-
 	Button removeChannelBtn = (Button) findViewById(R.id.removeChannelBtn);
 	removeChannelBtn
 		.setOnClickListener(new ChannelUtilities.ChannelRemoveSelectedClickListener());
@@ -90,6 +100,12 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	Button stopChannel = (Button) findViewById(R.id.stopBtn);
 	stopChannel.setOnClickListener(new StopStream());
 
+	Button emailDataButton = (Button) findViewById(R.id.emailDataBtn);
+	emailDataButton.setOnClickListener(new SendEmailOnClickListener());
+
+	Button uploadDataButton = (Button) findViewById(R.id.uploadToGoogleDriveBtn);
+	uploadDataButton
+		.setOnClickListener(new UploadToGoogleDriveOnClickListener());
     }
 
     @Override
@@ -99,6 +115,7 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
      */
     public void onResume() {
 	super.onResume();
+
 	int ii = 0;
 
 	// TableLayout activeChannels = (TableLayout)
@@ -139,38 +156,6 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
     private long lastNumSamples = 0;
     private final MovingAverage freqAvg = new MovingAverage(10);
 
-    // protected void redrawTable() {
-    // TableLayout activeChannels = (TableLayout)
-    // findViewById(R.id.activeChannels);
-    // activeChannels.removeAllViews();
-    // ArrayList<ChannelInterface> activeChannelsList =
-    // ConnectionManager.INSTANCE.activeChannelsList;
-    // int ii = 0;
-    // for (ChannelInterface channel : activeChannelsList) {
-    // addChannel(activeChannels, channel, ii++);
-    // }
-    //
-    // if (activeChannelsList.size() > 0) {
-    // AD7195W device = (AD7195W) activeChannelsList.get(0).getDevice();
-    // TextView samples = (TextView) findViewById(R.id.numberOfSamples);
-    // samples.setText(String.format("Number of samples: %d\t",
-    // device.getTotalMessageCount()));
-    //
-    // TextView sampleFreq = (TextView) findViewById(R.id.sampleFreq);
-    // long now = new Date().getTime();
-    // if (lastTime > 0) {
-    // float deltaTime = (now - lastTime) / 1000.0f;
-    // float freq = ((device.getTotalMessageCount() - lastNumSamples) /
-    // deltaTime);
-    // freqAvg.add(freq);
-    // sampleFreq.setText(String.format("Sample Frequency (Hz): %f\t",
-    // freqAvg.getAverage()));
-    // }
-    // lastTime = now;
-    // lastNumSamples = device.getTotalMessageCount();
-    // }
-    // }
-
     @SuppressLint("SimpleDateFormat")
     /**
      * Time formatter used for the Android plot Time axis. 
@@ -205,44 +190,6 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	}
 
     }
-
-    // @SuppressWarnings("deprecation")
-    // protected void onCreatePlot() {
-    // // get handles to our View defined in layout.xml:
-    // plot = (XYPlot) findViewById(R.id.chart);
-    // plot.setPadding(0, 0, 0, 0);
-    // plot.setTitle("");
-    // plot.setTitleWidget(null);
-    //
-    // // only display whole numbers in domain labels
-    // plot.getGraphWidget().setDomainValueFormat(new TimeFormat());
-    // Paint bg = new Paint();
-    // bg.setColor(Color.BLACK);
-    // plot.getGraphWidget().setBackgroundPaint(bg);
-    // Paint plotBg = new Paint();
-    // plotBg.setColor(Color.rgb(0, 26, 0));
-    // plot.getGraphWidget().setGridBackgroundPaint(plotBg);
-    //
-    // plot.getBackgroundPaint().setColor(Color.BLACK);
-    // plot.getBorderPaint().setStrokeWidth(1);
-    // Paint gridPaint = new Paint();
-    // gridPaint.setColor(Color.rgb(0, 102, 0));
-    // plot.getGraphWidget().setGridLinePaint(gridPaint);
-    // // getInstance and position datasets:
-    //
-    // plot.setDomainStepMode(XYStepMode.SUBDIVIDE);
-    // plot.setDomainStepValue(11);
-    // // thin out domain/range tick labels so they dont overlap each other:
-    // plot.setTicksPerDomainLabel(2);
-    // plot.setTicksPerRangeLabel(2);
-    // plot.disableAllMarkup();
-    // // freeze the range boundaries:
-    // plot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
-    //
-    // plot.setRangeLabel("V");
-    // plot.setDomainLabel("Time");
-    //
-    // }
 
     /**
      * Adds a DataSeries to the XY Plot.
@@ -309,14 +256,6 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 		float channelMin = channel.getMinimum();
 		min = (channelMin < min) ? channelMin : min;
 	    }
-
-	    // plot.setRangeBoundaries(min - 0.5, max + 0.5,
-	    // BoundaryMode.FIXED);
-	    // Date now = new Date();
-	    // plot.setDomainBoundaries(now.getTime() - 1000, now.getTime(),
-	    // BoundaryMode.FIXED);
-	    // plot.redraw();
-	    // redrawTable();
 
 	    if (activeChannelsList.size() > 0) {
 		AD7195W device = (AD7195W) activeChannelsList.get(0)
@@ -397,6 +336,12 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 	}
     }
 
+    /**
+     * OnClickListener that starts the streaming of data.
+     * 
+     * @author Marc
+     * 
+     */
     protected class StartStream implements View.OnClickListener {
 
 	public StartStream() {
@@ -405,11 +350,19 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 
 	@Override
 	public void onClick(View v) {
+	    Button emailDataButton = (Button) findViewById(R.id.emailDataBtn);
+	    emailDataButton.setEnabled(false);
+
+	    Button uploadDataButton = (Button) findViewById(R.id.uploadToGoogleDriveBtn);
+	    uploadDataButton.setEnabled(false);
+
 	    ArrayList<ChannelInterface> activeChannelsList = ConnectionManager.INSTANCE.activeChannelsList;
 	    if (activeChannelsList.size() > 0) {
 		AD7195W dev = (AD7195W) activeChannelsList.get(0).getDevice();
 		dev.startStreaming();
 	    }
+	    dbThread = new DatabaseWriteThread(getApplicationContext(), true);
+
 	}
 
     }
@@ -427,7 +380,51 @@ public class DataPlotActivity extends AppMenuActivity implements Runnable {
 		AD7195W dev = (AD7195W) activeChannelsList.get(0).getDevice();
 		dev.stopStreaming();
 	    }
+	    if (dbThread != null) {
+		dbThread.complete();
+	    }
+
+	    Button emailDataButton = (Button) findViewById(R.id.emailDataBtn);
+	    emailDataButton.setEnabled(true);
+
+	    Button uploadDataButton = (Button) findViewById(R.id.uploadToGoogleDriveBtn);
+	    uploadDataButton.setEnabled(true);
 	}
 
+    }
+
+    protected File convertDatabaseToCsv() {
+	MeasurementsDataSource ds = new MeasurementsDataSource(this);
+	ds.open();
+	File csvFile = ds.writeToCsv();
+	ds.close();
+	return csvFile;
+    }
+
+    protected class SendEmailOnClickListener implements View.OnClickListener {
+	@Override
+	public void onClick(View v) {
+	    sendData();
+	}
+    }
+
+    private final GoogleDriveHelper gdriveHelper = new GoogleDriveHelper(this);
+
+    protected class UploadToGoogleDriveOnClickListener implements
+	    View.OnClickListener {
+	@Override
+	public void onClick(View v) {
+	    gdriveHelper.uploadFile(convertDatabaseToCsv());
+	}
+    }
+
+    protected void sendData() {
+	Intent emailIntent = IntentFactory
+		.getSendEmailIntent(convertDatabaseToCsv());
+	try {
+	    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+	} catch (android.content.ActivityNotFoundException ex) {
+	    toast(this, "No email client installed.");
+	}
     }
 }

@@ -8,11 +8,14 @@ import java.io.IOException;
 import android.os.Environment;
 import android.util.Log;
 
-import com.lp.io.Message;
 import com.lp.io.MessageConsumer;
-import com.lp.io.SimpleProtobufMessage;
+import com.lp.io.messages.Message;
+import com.lp.io.messages.SimpleProtobufMessage;
 
 /**
+ * TODO: This file is no longer needed. Migrate the ability to create a file
+ * from the database.
+ * 
  * The log file writer class is a message consumer that writes all of the
  * messages received to a log file.
  */

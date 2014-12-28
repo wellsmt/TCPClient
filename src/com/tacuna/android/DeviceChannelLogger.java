@@ -11,6 +11,13 @@ import com.lp.io.MessageProducer;
 import com.tacuna.android.LogFileWriter.StorageNotAvailable;
 import com.tacuna.common.devices.DeviceInterface;
 
+/**
+ * TODO: This file is no longer needed. Migrate functionality to generated data
+ * files from the database
+ * 
+ * @author Marc
+ * 
+ */
 public class DeviceChannelLogger {
 
     private static final String FILE_DIR = "/WIFIDaq/";
